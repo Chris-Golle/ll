@@ -1,0 +1,13 @@
+{
+  "name": "twentytwentyfive-child",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "sass": "^1.97.1",
+    "vite": "^5.4.21"
+  }
+}

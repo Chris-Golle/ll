@@ -1,0 +1,777 @@
+// @import "variables";
+@use "variables";
+
+// BG
+body,
+.wp-site-blocks,
+footer {
+  background: variables.$url, linear-gradient(192.47deg, #F3F3F3 -4.35%, #ACBBC1 71.77%);}
+
+// HEADER
+// LOGO
+.custom-logo {
+  width: 200px !important;
+}
+
+@media only screen and (max-width: 768px) {
+    .custom-logo {
+        max-width: 100px !important;
+  }
+}
+.wp-block-site-logo {text-align: center;}
+
+// otherwise Gutenberg imposes 100% width to the #region elements and stacks them
+#regions + .wp-block-uagb-container > * {width:unset;}
+
+h2 {
+  font-size: 1.7rem;
+}
+
+h1,
+h2,
+h3,
+h3,
+h5 {
+  font-family: playfair-display;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: variables.$c0;
+}
+
+a {
+  color: variables.$c3 !important;
+  text-decoration: none;
+}
+
+// MENU
+@media only screen and (min-width: 768px) {
+  // size
+  .wp-block-navigation__responsive-container {
+    left: 25%;
+    top: 0;
+    width: 40%;
+    bottom: unset;
+    padding-bottom: 50px !important;
+  }
+}
+// remove space above sub-category
+.wp-block-navigation__responsive-container
+  .wp-block-navigation__submenu-container {
+  padding-top: unset !important;
+}
+
+// center page titles on mobile
+// @media only screen and (max-width: 768px) {
+  h1 {
+    max-width: 600px;
+    text-align: center;
+  }
+// }
+
+body {
+  font-size: 1.1rem;
+  font-family: "Raleway";
+  font-feature-settings: "lnum" 1; // for Raleway alignment of numbers
+}
+
+/* breadcrumbs */
+// .breadcrumbs {
+//     font-family: "Playfair Display";
+//     font-size: 18px;
+// }
+
+// .home .breadcrumbs {
+//     display: none;
+// }
+
+// REGION
+// #change_region {
+//   display: none;
+//   text-align: center;
+// }
+
+// #region-content a {
+//   padding: 5px 10px;
+//   text-decoration: none;
+// }
+
+// #change_region .wp-block-uagb-container {
+//   background-color: #ffffffab;
+//   width: 500px;
+//   margin: auto;
+//   padding: 30px;
+// }
+
+// #close-region {
+//   display: none;
+//   z-index: 9;
+//   position: absolute;
+//   top: 20px;
+//   right: 10px;
+// }
+
+// bug, needed to show regions horizontally
+// #change_region .uagb-container-inner-blocks-wrap {
+//   display: block;
+// }
+// // region elements closer together but keep padding in button
+// @media only screen and (max-width: 768px) {
+//   #change_region .wp-block-uagb-container {
+//     width: unset;
+//   }
+//   #region-content a {
+//     padding: 0;
+//   }
+// }
+
+// ???
+// .box,
+// .woocommerce-message {
+//   padding: 20px;
+//   background: $url, $c1;
+//   color: $s1;
+//   border-radius: 6px;
+//   border: none;
+// }
+// .box:not(.no-shade) {
+//   box-shadow: 0px 5px 30px 3px rgba($c1, 0.5);
+// }
+
+// BUTTONS sadly the .checkout-button makes !important necessary https://codepen.io/giana/pen/xdXpJB
+button[type="submit"],
+.button,
+.uagb-cta__buttons,
+.wp-block-button__link,
+.components-button {
+  background: variables.$url, variables.$c3 !important;
+  color: variables.$s1 !important;
+//   border-radius: 6px !important;
+}
+
+.uagb-cta__buttons a {
+  font-size: 1.3rem !important;
+}
+
+.button:not(.no-shade),
+.wp-block-button__link:not(.no-shade) {
+  box-shadow: 0px 5px 30px 3px rgba(variables.$c3, 0.5);
+}
+
+button[type="submit"]:hover,
+.button:hover,
+.uagb-cta__buttons:hover,
+.wp-block-button__link:hover,
+.components-button:hover {
+  color: variables.$c3 !important;
+  background: variables.$url, variables.$s1 !important;
+}
+
+button[type="submit"] {
+  padding: 20px;
+  font-size: unset;
+  // font-family: "Raleway";
+}
+
+// correct the wrong margin of qty buttons plugin, and change color
+.woocommerce div.product form.cart div.quantity .qty {
+    margin-right: unset;}
+.button.plus, .button.minus { background: none !important; color: variables.$c1 !important}
+
+// 'make it your own' button and product-customizer
+// .woocommerce-variation-add-to-cart a.button {
+//     padding: 45px;
+//     margin: 20px 0;
+//     line-height: 1.6em;
+//     color: $c1;
+//     text-align: center;
+// }
+
+// .product-customizer__header-title {
+//     line-height: 1.2rem !important;
+//     float: unset !important;
+// }
+
+// @media only screen and (max-width: 768px) {
+//     .product-customizer__header-title {
+//         margin: -10px 0 0 !important;
+//     }
+// }
+
+// PROD CATS
+/* Product categories shortcode */
+.woocommerce-loop-category__title {
+  color: variables.$c3;
+}
+
+// clean default prod cat template
+.woocommerce-products-header__title,
+.woocommerce-breadcrumb {
+  display: none;
+}
+
+.cat_thumbnail {
+  max-width: 50% !important;
+  margin: auto;
+  // display: block;
+}
+
+// SINGLE PROD
+// clean default single prod template
+// .product_meta,
+// .related.products {
+//   display: none;
+// }
+
+// Products lists
+// .showing_cats_products {
+//     text-align: center;
+// }
+
+// prod cats have .products class, but we don't want them to be flex
+// 2022: flex breaks the columns in product shortcode
+// .products:not(.showing_main_cats .products) {
+// 	display: flex; }
+// .products {
+// align-items: center;
+// justify-content: center;
+// display: flex;
+// }
+
+.laundry img {
+  width: 35px;
+  vertical-align: middle;
+}
+
+//typewriter needs height to prevent flicker up/down on mobile
+.typewriter {
+  height: 18px;
+  margin: auto;
+}
+
+// ENSO
+.enso {
+  position: absolute;
+  top: 59%;
+  left: 30%;
+  width: 17%;
+}
+
+#enso1 {
+  width: 40px;
+  left: -20px;
+  top: -20px;
+}
+
+#enso2 {
+  height: auto;
+  display: block;
+  width: 100%;
+}
+
+#enso1,
+#enso2 {
+  position: absolute;
+  opacity: 0.72;
+  transform: rotateY(35deg);
+  animation: flip35 7s infinite ease-in-out;
+}
+
+@keyframes flip35 {
+  100% {
+    transform: rotateY(395deg);
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  selector {
+    margin-left: -140px;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  selector {
+    margin-left: -105px;
+  }
+}
+
+// END ENSO
+
+figcaption {
+  text-align: center;
+}
+
+// CTA
+.wp-block-uagb-call-to-action {
+  box-shadow: -10px 0 0 0 variables.$c3, 10px 0 0 0 variables.$c3;
+  background: variables.$url, variables.$s1;
+  border-radius: 6px;
+}
+
+.wp-block-uagb-call-to-action h3,
+.wp-block-uagb-call-to-action p {
+  color: variables.$c3 !important;
+}
+
+// QUIZ - FULL SCREEN OVERRIDE
+#quiz-modal {
+  display: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+}
+
+#quiz {
+  position: absolute !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: center !important;
+  top: 0 !important;
+  left: 0 !important;
+  transform: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100vh !important;
+}
+
+// center the typwriter on mobile
+@media only screen and (max-width: 768px) {
+  .quiz-taken p {
+    text-align: center;
+  }
+}
+
+#close-quiz {
+  display: none !important;
+  z-index: 10002 !important;
+  position: fixed !important;
+  top: 30px !important;
+  right: 30px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 60px !important;
+  height: 60px !important;
+  font-size: 24px !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.quiz-question {
+  font-size: 2.5rem !important;
+  font-weight: bold !important;
+  text-align: center !important;
+  margin: 50px 10% 0 !important;
+  color: #333 !important;
+  line-height: 1.4 !important;
+  max-width: 800px !important;
+  padding: 0 40px !important;
+  text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+}
+
+// .quiz-answer {
+//   font-size: 1.3rem !important;
+//   padding: 20px 30px !important;
+//   cursor: pointer !important;
+//   margin: 20px auto !important;
+//   background-color: rgba(255, 255, 255, 0.9) !important;
+//   border: none !important;
+//   border-radius: 12px !important;
+//   transition: all 0.3s ease !important;
+//   backdrop-filter: blur(10px) !important;
+//   max-width: 400px !important;
+//   display: block !important;
+//   width: 100% !important;
+// }
+
+// .quiz-answer:hover {
+//   background-color: rgba(255, 255, 255, 1) !important;
+//   transform: translateY(-3px) !important;
+//   box-shadow: 0 8px 30px rgba(96, 125, 139, 0.4) !important;
+// }
+
+// .quiz-answer:focus {
+//   outline: 3px solid #607d8b !important;
+//   outline-offset: 3px !important;
+//   transform: translateY(-2px) !important;
+// }
+
+/* Full Screen Quiz Enhancements */
+#quiz-modal.show {
+  display: block !important;
+}
+
+body.quiz-active {
+  overflow: hidden !important;
+}
+
+/* Ensure quiz takes full viewport */
+#quiz-modal,
+#quiz {
+  box-sizing: border-box !important;
+}
+
+// "Your results"
+.quiz-results > div > p {
+  width: 240px;
+  margin: 0 auto 20px;
+  padding: 20px;
+}
+
+#remember {
+  font-size: 1.5rem;
+  // color: white;
+  margin: 0 0 30px 0;
+  padding: 20px;
+  // min-height: 72px;
+  // width: 100%;
+}
+
+#remember span:first-child {
+  margin-left: 30%;
+}
+
+@media only screen and (max-width: 768px) {
+  #remember {
+    min-height: 72px;
+    margin: 0 0 20px 0;
+  }
+
+  #remember > span {
+    margin-left: 0;
+  }
+}
+
+// make it less airy
+.showing_main_cats .product-category.product {
+  margin-bottom: 28px !important;
+}
+
+// make it less airy
+.showing_subcats_kids li.product {
+  margin: 0 !important;
+}
+
+.showing_main_cats_kids img,
+.showing_subcats_kids img {
+  display: none !important;
+}
+
+.showing_subcats_kids h2 {
+  font-family: "Princess Sofia";
+  letter-spacing: 0.6px;
+  font-size: 1.5rem !important;
+}
+
+.showing_main_cats_kids h2 {
+  font-family: "Playfair Display";
+  color: #fdff9b;
+}
+
+.showing_main_cats_kids .product-category {
+  background: #409dec;
+  padding: 10px !important;
+  width: 100% !important;
+  margin-bottom: 10px !important;
+}
+
+.showing_main_cats_kids a,
+.showing_subcats_kids a {
+  pointer-events: none;
+}
+
+.showing_main_cats_kids
+  ul.products
+  li.product
+  .woocommerce-loop-category__title {
+  padding: 0;
+}
+
+// hide 'reset quiz' button by default
+// #reset-quiz {visibility: hidden;}
+
+/* Strengths gallery */
+.showing_main_cats ul > li > a > img {
+  max-height: 80px;
+  object-fit: contain;
+}
+
+.showing_main_cats .count {
+  display: none;
+}
+
+// the variation swatches plugin shows 'size' otherwise 'colors' are not clickable on prod cat lists, so we hide size
+.products .vi-wpvs-variation-style:last-of-type {
+  display: none !important;
+}
+
+/* Strengths descriptions */
+body.archive.tax-product_cat:not(.term-look-at-you) {
+  background-image: radial-gradient(at 50% 800px, variables.$s1 10%, variables.$s2 30%, variables.$s3), variables.$url;
+  box-shadow: -10px 5px 20px 10px #5c6f92aa, 10px 5px 20px 10px #5c6f92aa;
+}
+
+// .intro
+.term-description div:nth-of-type(1) {
+  text-align: left;
+  margin: 30px auto;
+  max-width: 600px;
+}
+
+// .intro .bubble
+.term-description div:nth-of-type(1) span {
+  display: inline-block;
+  font-size: x-large;
+  color: salmon;
+  margin: 10px;
+}
+
+@media only screen and (max-width: 768px) {
+  .s-pic {
+    padding: 20px;
+  }
+  term-description div:nth-of-type(1) span {
+    width: unset;
+  }
+}
+
+/* size of etymology word */
+// .larger
+// .term-description div:nth-of-type(3) span:nth-of-type(1) {
+//     font-size: 1.8rem;
+//     line-height: 1.8rem;
+// }
+
+/* highlight */
+.highlight // .term-description div:nth-of-type(3) span:nth-of-type(2),
+
+// .term-description p span
+{
+  font-style: inherit;
+  display: inline;
+  color: grey;
+  background-color: khaki;
+  margin: 10px;
+  padding: 0.1rem;
+  // line-height: 2rem;
+  box-shadow: -5px 0px 0 0 khaki, 5px 0px 0 0 khaki;
+  border-radius: 9px;
+}
+
+.bigsign {
+  font-size: 3rem;
+}
+
+.term-description {
+  margin: 30px 0 0;
+  text-align: center;
+}
+
+/* etymology */
+.etymology,
+.term-description div:nth-of-type(3) {
+  // font-weight: inherit;
+  // display: block;
+  color: white;
+  margin: 60px 20px;
+  padding: 40px;
+  line-height: 1.6rem;
+  text-align: left;
+  background-image: variables.$url;
+  background-color: #607d8b;
+  border-radius: 35px;
+}
+
+/* quote */
+blockquote,
+cite {
+  line-height: 1.8rem;
+}
+
+@media only screen and (max-width: 768px) {
+  blockquote {
+    margin: 0;
+  }
+
+  blockquote p {
+    margin: 20px 0;
+  }
+}
+
+// .bubbleflex
+.term-description div:nth-of-type(5) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* cite {line-height: 3rem;} */
+/* cloud of quotes 1 and 2. Note: box-decoration-break: clone; is needed for FF to pad correctly on line breaks, and that makes the pre::after needed to fix the weird line breaks */
+.term-description pre {
+  padding: 15px 50px;
+  border-radius: 30px;
+  white-space: pre-wrap;
+  flex-grow: 2;
+  max-width: 150px;
+  margin: 30px;
+  // text-align: center;
+  // background-color: white;
+  // background-image: $url;
+  box-decoration-break: clone;
+}
+
+.term-description pre:nth-child(even) {
+  // color: darkslategray;
+  // background-color: honeydew;
+  box-shadow: -10px 0 0 0 #5c6f92, 10px 0 0 0 #5c6f92;
+}
+
+.term-description pre:nth-child(odd) {
+  // color: darkslategray;
+  // background-color: #fbf6e7;
+  box-shadow: -10px 0 0 0 #aac9c3, 10px 0 0 0 #aac9c3;
+}
+
+.term-description pre::after {
+  content: "  ";
+}
+
+@media only screen and (max-width: 768px) {
+  .term-description pre {
+    width: unset;
+    margin: 10px 30px;
+  }
+}
+
+/* PRODUCTS */
+
+// buy button align bug
+.products.columns-1 .product {
+  width: auto !important;
+}
+
+// sale
+.woocommerce span.onsale {
+  padding: 1em;
+  line-height: 1.5;
+  background-color: #ffe692;
+  color: variables.$c0;
+}
+
+/* Remove product tabs, used after woo_remove_product_tabs in functions.php removed the additional info tab */
+// .tabs.wc-tabs {
+//     display: none;
+// }
+
+// #tab-title-additional_information {
+//     display: none;
+// }
+
+/* Undo alternating bg color of product selection boxes */
+table tbody > tr > td,
+table tbody > tr > th {
+  background: none !important;
+}
+
+// PRINTFUL PRODUCTS
+// pre {
+//     font-family: "Raleway";
+//   }
+  
+//   .flipping {
+//     margin: 50px auto 30px !important;
+//   }
+  
+//   .centered-img {
+//     max-width: 500px !important;
+//     max-height: 100%;
+//     width: 100% !important;
+//     height: auto !important;
+//     display: block;
+//     margin: 20px auto;
+//   }
+  
+//   .flipping > .centered-img,
+//   .flipping::after {
+//     animation: 6s ease-in-out alternate infinite;
+//   }
+  
+//   .flipping > .centered-img {
+//     animation-name: flip;
+//   }
+  
+//   .flipping::after {
+//     content: "Seen in a mirror";
+//     animation-name: blink;
+//     display: block;
+//     text-align: center;
+//   }
+  
+//   @keyframes flip {
+//     100% {
+//       transform: rotateY(180deg);
+//       transform-origin: center;
+//     }
+//   }
+  
+//   @keyframes blink {
+//     0% {
+//       content: "Seen in a mirror";
+//     }
+  
+//     25% {
+//       opacity: 1;
+//     }
+  
+//     50% {
+//       opacity: 0;
+//     }
+  
+//     75% {
+//       opacity: 1;
+//     }
+  
+//     100% {
+//       content: "Seen on you";
+//     }
+//   }
+
+
+/* CART */
+// show product pictures on mobile too
+// .woocommerce table.cart .product-thumbnail, .woocommerce-page #content table.cart .product-thumbnail, .woocommerce-page table.cart .product-thumbnail {
+//     display: block!important;}
+// remove strange ':' before product picture on mobile
+// .woocommerce table.shop_table_responsive tr td::before, .woocommerce-page table.shop_table_responsive tr td::before {content: none;}
+
+/* PAYMENT */
+
+/* CHECKOUT */
+// notices
+.woocommerce-info {
+  border: none;
+  background-color: rgba(176, 176, 176, 0.22);
+}
+
+/* SHIPPING */
+
+/* CART NOTICES */
+// .woocommerce-cart-notice-ships-free{}
+
+.hidden {
+  display: none;
+}

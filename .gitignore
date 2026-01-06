@@ -1,0 +1,33 @@
+# --- OS Metadata ---
+.DS_Store
+Thumbs.db
+.apple/
+
+# --- IDE & AI Tool Junk ---
+.vscode/
+.idea/
+.history/
+*.log
+.cursor/cache/
+
+# --- Build Tools & Dependencies ---
+# (In case you use Tailwind, Sass, or local scripts)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.sass-cache/
+dist/
+
+# --- WordPress / Plugin Garbage ---
+# Sometimes plugins drop temp files in theme folders
+*.bak
+*.swp
+*.zip
+*.tar.gz
+
+# --- Keep these! ---
+# We want to make sure these are NOT ignored
+!.gitignore
+!style.css
+!functions.php
+!screenshot.png
