@@ -611,11 +611,10 @@ jQuery(document).ready(function($) {
             type: 'POST',
             data: {
                 action: 'load_board_animation',
-                post_id: postId,
+                post_id: postId, // Pass the post ID to the AJAX handler
                 nonce: boardAnimationData.nonce
             },
             success: function(response) {
-                console.log('Full AJAX Response:', response); // Log the entire response for debugging
                 if (response.success) {
                     const data = response.data;
                     let html = '';
