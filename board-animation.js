@@ -615,6 +615,7 @@ jQuery(document).ready(function($) {
                 nonce: boardAnimationData.nonce
             },
             success: function(response) {
+                console.log('Full AJAX Response:', response); // Log the entire response for debugging
                 if (response.success) {
                     const data = response.data;
                     let html = '';

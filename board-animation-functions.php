@@ -483,6 +483,7 @@ function load_board_animation_ajax() {
         // Add any custom meta fields here
         'animation_speed' => get_post_meta($post_id, 'animation_speed', true),
         'grid_size' => get_post_meta($post_id, 'grid_size', true),
+        'loaded_post_id' => $post_id, // Add for debugging
     );
     
     wp_send_json_success($custom_data);
