@@ -448,12 +448,15 @@
 
 /* Trigger button styling */
 .board-animation-trigger {
-    cursor: pointer;
-    transition: all 0.3s ease;
-    max-width: 300px; /* Increased width to prevent text wrapping */
-    margin: 0 auto;
-    display: block;
-    padding: 15px 25px; /* Adjusted padding for better proportions */
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+    display: block !important;
+    height: 50px !important; /* Explicit height */
+    padding: 0 25px !important; /* Control padding */
+    line-height: 50px !important; /* Center text vertically */
+    text-align: center !important;
 }
 
 .board-animation-trigger:hover {
