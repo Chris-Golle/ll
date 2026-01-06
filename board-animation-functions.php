@@ -361,58 +361,64 @@ function save_board_animation_meta($post_id) {
 // Enqueue styles and scripts for board animation
 add_action('wp_enqueue_scripts', 'enqueue_board_animation_assets');
 function enqueue_board_animation_assets() {
-    if (is_singular('board_animation')) {
-                        wp_enqueue_style(
-                    'board-animation-style',
-                    get_stylesheet_directory_uri() . '/css/board-animation.css',
-                    array(),
-                    '1.0.1'
-                );
-        
-                        wp_enqueue_script(
-                    'board-animation-script',
-                    get_stylesheet_directory_uri() . '/board-animation.js',
-                    array('jquery'),
-                    '1.0.50',
-                    true
-                );
-        
-                // Get the current post's board messages
-                $board_messages = get_post_meta(get_the_ID(), '_board_messages', true);
+    global $post;
+    $is_board_animation_post = is_singular('board_animation');
+    $has_shortcode = ! empty( $post ) && is_a($post, 'WP_Post') && has_shortcode( $post->post_content, 'board_animation_trigger' );
 
-                // Ensure we have an array
-                if (!is_array($board_messages)) {
-                    // Try to recover from JSON backup
-                    $json_backup = get_post_meta(get_the_ID(), '_board_messages_json', true);
-                    if ($json_backup) {
-                        $recovered_messages = json_decode($json_backup, true);
-                        if (is_array($recovered_messages)) {
-                            $board_messages = $recovered_messages;
-                        } else {
-                            $board_messages = array();
-                        }
+    if ($is_board_animation_post || $has_shortcode) {
+        wp_enqueue_style(
+            'board-animation-style',
+            get_stylesheet_directory_uri() . '/css/board-animation.css',
+            array(),
+            '1.0.1'
+        );
+
+        wp_enqueue_script(
+            'board-animation-script',
+            get_stylesheet_directory_uri() . '/board-animation.js',
+            array('jquery'),
+            '1.0.50',
+            true
+        );
+        
+        $board_messages = array();
+        if ($is_board_animation_post) {
+            // Get the current post's board messages
+            $board_messages = get_post_meta(get_the_ID(), '_board_messages', true);
+
+            // Ensure we have an array
+            if (!is_array($board_messages)) {
+                // Try to recover from JSON backup
+                $json_backup = get_post_meta(get_the_ID(), '_board_messages_json', true);
+                if ($json_backup) {
+                    $recovered_messages = json_decode($json_backup, true);
+                    if (is_array($recovered_messages)) {
+                        $board_messages = $recovered_messages;
                     } else {
                         $board_messages = array();
                     }
+                } else {
+                    $board_messages = array();
                 }
+            }
 
-                // Convert newline markers back to newlines for JavaScript
+            // Convert newline markers back to newlines for JavaScript
+            if (is_array($board_messages)) {
                 $board_messages = array_map(function($msg) {
                     $msg = str_replace('{{NEWLINE}}', "\n", $msg);
                     return $msg;
                 }, $board_messages);
+            } else {
+                $board_messages = array();
+            }
+        }
 
-                // Use only the messages provided by the user
-                // No fallback to default messages
-
-                // Localize script with post data AND messages
-                wp_localize_script('board-animation-script', 'boardAnimationData', array(
-                    'ajaxUrl' => admin_url('admin-ajax.php'),
-                    'nonce' => wp_create_nonce('board_animation_nonce'),
-                    'messages' => $board_messages
-                ));
-                
-
+        // Localize script with post data AND messages
+        wp_localize_script('board-animation-script', 'boardAnimationData', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('board_animation_nonce'),
+            'messages' => $board_messages
+        ));
     }
 }
 
