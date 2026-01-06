@@ -450,9 +450,10 @@
 .board-animation-trigger {
     cursor: pointer;
     transition: all 0.3s ease;
-    max-width: 200px;
+    max-width: 300px; /* Increased width to prevent text wrapping */
     margin: 0 auto;
     display: block;
+    padding: 15px 25px; /* Adjusted padding for better proportions */
 }
 
 .board-animation-trigger:hover {
