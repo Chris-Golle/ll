@@ -363,57 +363,58 @@ add_action('wp_enqueue_scripts', 'enqueue_board_animation_assets');
 function enqueue_board_animation_assets() {
     global $post;
     $is_board_animation_post = is_singular('board_animation');
-    $has_shortcode = ! empty( $post ) && is_a($post, 'WP_Post') && has_shortcode( $post->post_content, 'board_animation_trigger' );
+    $has_shortcode = !empty($post) && is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'board_animation_trigger');
 
     if ($is_board_animation_post || $has_shortcode) {
         wp_enqueue_style(
             'board-animation-style',
             get_stylesheet_directory_uri() . '/css/board-animation.css',
             array(),
-            '1.0.1'
+            '1.0.2' // Version bump for cache busting
         );
 
         wp_enqueue_script(
             'board-animation-script',
             get_stylesheet_directory_uri() . '/board-animation.js',
             array('jquery'),
-            '1.0.50',
+            '1.0.51', // Version bump for cache busting
             true
         );
-        
-        $board_messages = array();
-        if ($is_board_animation_post) {
-            // Get the current post's board messages
-            $board_messages = get_post_meta(get_the_ID(), '_board_messages', true);
 
-            // Ensure we have an array
+        $post_id_to_load = 0;
+        if ($is_board_animation_post) {
+            $post_id_to_load = get_the_ID();
+        } elseif ($has_shortcode) {
+            // Find the post_id from the shortcode attribute
+            preg_match('/\[board_animation_trigger.*?post_id="(\d+)"/', $post->post_content, $matches);
+            if (isset($matches[1])) {
+                $post_id_to_load = intval($matches[1]);
+            }
+        }
+
+        $board_messages = array();
+        if ($post_id_to_load > 0) {
+            $board_messages = get_post_meta($post_id_to_load, '_board_messages', true);
+
             if (!is_array($board_messages)) {
-                // Try to recover from JSON backup
-                $json_backup = get_post_meta(get_the_ID(), '_board_messages_json', true);
+                $json_backup = get_post_meta($post_id_to_load, '_board_messages_json', true);
                 if ($json_backup) {
                     $recovered_messages = json_decode($json_backup, true);
                     if (is_array($recovered_messages)) {
                         $board_messages = $recovered_messages;
-                    } else {
-                        $board_messages = array();
                     }
-                } else {
-                    $board_messages = array();
                 }
             }
 
-            // Convert newline markers back to newlines for JavaScript
             if (is_array($board_messages)) {
                 $board_messages = array_map(function($msg) {
-                    $msg = str_replace('{{NEWLINE}}', "\n", $msg);
-                    return $msg;
+                    return str_replace('{{NEWLINE}}', "\n", $msg);
                 }, $board_messages);
             } else {
                 $board_messages = array();
             }
         }
 
-        // Localize script with post data AND messages
         wp_localize_script('board-animation-script', 'boardAnimationData', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('board_animation_nonce'),
@@ -440,13 +441,13 @@ function board_animation_trigger_shortcode($atts) {
         'button_class' => 'wp-block-button__link'
     ), $atts);
     
-    if (empty($atts['post_id'])) {
-        return '<p>Error: No post ID specified</p>';
+    if (empty($atts['post_id']) || !is_numeric($atts['post_id'])) {
+        return '<p style="color: red; font-weight: bold;">Error: Board animation shortcode requires a valid post_id. Example: [board_animation_trigger post_id="123"]</p>';
     }
     
-    $post = get_post($atts['post_id']);
+    $post = get_post(intval($atts['post_id']));
     if (!$post || $post->post_type !== 'board_animation') {
-        return '<p>Error: Invalid board animation post</p>';
+        return '<p style="color: red; font-weight: bold;">Error: Invalid post ID or not a board animation post. Please check the post_id.</p>';
     }
     
     $output = '<button class="board-animation-trigger ' . esc_attr($atts['button_class']) . '" ';
