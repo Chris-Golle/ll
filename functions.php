@@ -801,3 +801,5 @@ function tinymce_fix($init)
 }
 add_filter('tiny_mce_before_init', 'tinymce_fix');
 // END Stop removing span tags from WordPress
+
+require_once get_stylesheet_directory() . '/board-animation-fix.php';
