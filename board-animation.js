@@ -639,8 +639,8 @@ jQuery(document).ready(function($) {
                     $modalBody.html('<p class="error">Failed to load animation. ' + response.data + '</p>');
                 }
             },
-            error: function() {
-                $modalBody.html('<p class="error">An error occurred. Please try again.</p>');
+            error: function(jqXHR, textStatus, errorThrown) {
+                $modalBody.html('<p class="error">An AJAX error occurred: ' + textStatus + ' - ' + errorThrown + '</p>');
             }
         });
     });

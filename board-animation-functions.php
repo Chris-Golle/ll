@@ -488,34 +488,6 @@ function load_board_animation_ajax() {
     wp_send_json_success($custom_data);
 }
 
-// Enqueue board animation pop-up scripts
-add_action('wp_enqueue_scripts', 'enqueue_board_animation_popup');
-function enqueue_board_animation_popup() {
-    $version = wp_get_theme()->get('Version');
-    
-    // // Pop-up CSS
-    // wp_enqueue_style(
-    //     'board-animation-popup',
-    //     get_stylesheet_directory_uri() . '/css/board-animation-popup.css',
-    //     array(),
-    //     $version
-    // );
-    
-    // // Pop-up JS
-    // wp_enqueue_script(
-    //     'board-animation-popup',
-    //     get_stylesheet_directory_uri() . '/js/board-animation-popup.js',
-    //     array('jquery'),
-    //     $version,
-    //     true
-    // );
-    
-    // Localize script
-    wp_localize_script('board-animation-popup', 'boardAnimationData', array(
-        'ajax_url' => admin_url('admin-ajax.php'),
-        'nonce' => wp_create_nonce('board_animation_nonce'),
-    ));
-}
 
 // Add pop-up container to footer
 add_action('wp_footer', 'board_animation_popup_container');
