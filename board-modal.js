@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event delegation for the trigger button
     document.body.addEventListener('click', async (event) => {
-        if (event.target.matches('.board-animation-trigger-button')) {
+        if (event.target.matches('.board-animation-trigger')) {
             console.log('Trigger button clicked.');
 
             const button = event.target;
-            const postId = button.dataset.postId;
+            const postId = button.dataset.animationId;
 
             if (!postId) {
                 console.error('Post ID not found on button.');
