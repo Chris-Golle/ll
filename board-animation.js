@@ -636,24 +636,11 @@ jQuery(document).ready(function($) {
                     
                     $modalBody.html(html);
                 } else {
-                    // Safer aggressive debugging
-                    const $errorContainer = $('<div class="error-container"></div>');
-                    $errorContainer.append('<p class="error">Failed to load animation. Full response:</p>');
-                    const $pre = $('<pre></pre>').text(JSON.stringify(response, null, 2));
-                    $errorContainer.append($pre);
-                    $modalBody.html($errorContainer);
+                    $modalBody.html('<p class="error">Failed to load animation. ' + response.data + '</p>');
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                // Safer aggressive debugging
-                const $errorContainer = $('<div class="error-container"></div>');
-                $errorContainer.append('<p class="error">An AJAX error occurred.</p>');
-                $errorContainer.append('<p><strong>Status:</strong> ' + textStatus + '</p>');
-                $errorContainer.append('<p><strong>Error:</strong> ' + errorThrown + '</p>');
-                $errorContainer.append('<p><strong>Response Text:</strong></p>');
-                const $pre = $('<pre></pre>').text(jqXHR.responseText);
-                $errorContainer.append($pre);
-                $modalBody.html($errorContainer);
+                $modalBody.html('<p class="error">An AJAX error occurred: ' + textStatus + ' - ' + errorThrown + '</p>');
             }
         });
     });
