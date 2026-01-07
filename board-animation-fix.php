@@ -6,7 +6,46 @@
  * Author: Jules
  */
 
-// === 1. SHORTCODE REGISTRATION ===
+// === 1. CPT REGISTRATION ===
+// Registers the 'board_animation' custom post type.
+add_action('init', 'register_board_animation_post_type');
+function register_board_animation_post_type() {
+    $labels = array(
+        'name'               => 'Board Animations',
+        'singular_name'      => 'Board Animation',
+        'menu_name'          => 'Board Animations',
+        'add_new'            => 'Add New',
+        'add_new_item'       => 'Add New Board Animation',
+        'edit_item'          => 'Edit Board Animation',
+        'new_item'           => 'New Board Animation',
+        'view_item'          => 'View Board Animation',
+        'search_items'       => 'Search Board Animations',
+        'not_found'          => 'No board animations found',
+        'not_found_in_trash' => 'No board animations found in trash'
+    );
+
+    $args = array(
+        'labels'              => $labels,
+        'public'              => true,
+        'publicly_queryable'  => true,
+        'show_ui'             => true,
+        'show_in_menu'        => true,
+        'show_in_rest'        => true,
+        'query_var'           => true,
+        'rewrite'             => array('slug' => 'board-animation'),
+        'capability_type'     => 'post',
+        'has_archive'         => true,
+        'hierarchical'        => false,
+        'menu_position'       => 20,
+        'menu_icon'           => 'dashicons-admin-customizer',
+        'supports'            => array('title', 'editor', 'thumbnail', 'custom-fields')
+    );
+
+    register_post_type('board_animation', $args);
+}
+
+
+// === 2. SHORTCODE REGISTRATION ===
 // Registers the [board_animation_trigger] shortcode.
 add_shortcode('board_animation_trigger', 'board_animation_trigger_shortcode');
 
