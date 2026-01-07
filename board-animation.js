@@ -636,17 +636,24 @@ jQuery(document).ready(function($) {
                     
                     $modalBody.html(html);
                 } else {
-                    // Aggressive debugging: show the entire response
-                    $modalBody.html('<p class="error">Failed to load animation. Full response: <pre>' + JSON.stringify(response, null, 2) + '</pre></p>');
+                    // Safer aggressive debugging
+                    const $errorContainer = $('<div class="error-container"></div>');
+                    $errorContainer.append('<p class="error">Failed to load animation. Full response:</p>');
+                    const $pre = $('<pre></pre>').text(JSON.stringify(response, null, 2));
+                    $errorContainer.append($pre);
+                    $modalBody.html($errorContainer);
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                // Aggressive debugging: show all available error info
-                let errorDetails = 'An AJAX error occurred. ';
-                errorDetails += 'Status: ' + textStatus + '. ';
-                errorDetails += 'Error: ' + errorThrown + '. ';
-                errorDetails += 'Response Text: <pre>' + jqXHR.responseText + '</pre>';
-                $modalBody.html('<p class="error">' + errorDetails + '</p>');
+                // Safer aggressive debugging
+                const $errorContainer = $('<div class="error-container"></div>');
+                $errorContainer.append('<p class="error">An AJAX error occurred.</p>');
+                $errorContainer.append('<p><strong>Status:</strong> ' + textStatus + '</p>');
+                $errorContainer.append('<p><strong>Error:</strong> ' + errorThrown + '</p>');
+                $errorContainer.append('<p><strong>Response Text:</strong></p>');
+                const $pre = $('<pre></pre>').text(jqXHR.responseText);
+                $errorContainer.append($pre);
+                $modalBody.html($errorContainer);
             }
         });
     });
