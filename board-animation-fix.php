@@ -47,6 +47,14 @@ function board_animation_trigger_shortcode($atts) {
 add_action('wp_enqueue_scripts', 'board_animation_enqueue_assets');
 
 function board_animation_enqueue_assets() {
+    // Enqueue the CSS file.
+    wp_enqueue_style(
+        'board-animation-style',
+        get_stylesheet_directory_uri() . '/css/board-animation.css',
+        array(),
+        '1.0'
+    );
+
     // Enqueue the JavaScript file.
     wp_enqueue_script(
         'board-modal-js',
