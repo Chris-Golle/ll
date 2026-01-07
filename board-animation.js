@@ -636,7 +636,7 @@ jQuery(document).ready(function($) {
                     
                     $modalBody.html(html);
                 } else {
-                    $modalBody.html('<p class="error">Failed to load animation.</p>');
+                    $modalBody.html('<p class="error">Failed to load animation. ' + response.data + '</p>');
                 }
             },
             error: function() {

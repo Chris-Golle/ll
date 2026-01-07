@@ -469,7 +469,7 @@ function load_board_animation_ajax() {
     $post = get_post($post_id);
     
     if (!$post || $post->post_type !== 'board_animation') {
-        wp_send_json_error('Invalid post');
+        wp_send_json_error('Invalid post or post_id. Received post_id: ' . $post_id);
     }
     
     // Get the post content
