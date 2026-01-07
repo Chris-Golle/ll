@@ -486,6 +486,7 @@ function load_board_animation_ajax() {
     );
     
     wp_send_json_success($custom_data);
+    wp_die(); // End AJAX request
 }
 
 
