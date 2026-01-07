@@ -636,11 +636,17 @@ jQuery(document).ready(function($) {
                     
                     $modalBody.html(html);
                 } else {
-                    $modalBody.html('<p class="error">Failed to load animation. ' + response.data + '</p>');
+                    // Aggressive debugging: show the entire response
+                    $modalBody.html('<p class="error">Failed to load animation. Full response: <pre>' + JSON.stringify(response, null, 2) + '</pre></p>');
                 }
             },
             error: function(jqXHR, textStatus, errorThrown) {
-                $modalBody.html('<p class="error">An AJAX error occurred: ' + textStatus + ' - ' + errorThrown + '</p>');
+                // Aggressive debugging: show all available error info
+                let errorDetails = 'An AJAX error occurred. ';
+                errorDetails += 'Status: ' + textStatus + '. ';
+                errorDetails += 'Error: ' + errorThrown + '. ';
+                errorDetails += 'Response Text: <pre>' + jqXHR.responseText + '</pre>';
+                $modalBody.html('<p class="error">' + errorDetails + '</p>');
             }
         });
     });
