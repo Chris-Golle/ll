@@ -175,7 +175,7 @@ function render_board_modal_button($atts) {
 }
 
 // Render Modals and Script in Footer
-add_action('wp_footer', function() {
+function lullberry_render_board_modals_in_footer() {
     global $board_modals;
     if (empty($board_modals)) return;
 
@@ -185,23 +185,33 @@ add_action('wp_footer', function() {
             <button class="board-modal-close" aria-label="Close">×</button>
             <iframe src="<?php echo esc_url($url); ?>"></iframe>
         </dialog>
-    <?php endforeach; ?>
-<?php });
+    <?php endforeach;
+}
+add_action('wp_footer', 'lullberry_render_board_modals_in_footer');
 
-add_action( 'woocommerce_before_single_product_summary', function() {
-
-    if ( ! function_exists( 'get_field' ) ) return;
+function lullberry_display_board_animation_on_product_page() {
+    if ( ! function_exists( 'get_field' ) ) {
+        return;
+    }
 
     $board_id = get_field( 'board_animation' );
-    if ( ! $board_id ) return;
+    if ( ! $board_id ) {
+        return;
+    }
 
-    $post = get_post( $board_id );
-    if ( ! $post || $post->post_type !== 'board_animation' ) return;
+    $board_post = get_post( $board_id );
+    if ( ! $board_post || 'board_animation' !== $board_post->post_type ) {
+        return;
+    }
 
+    // Setup post data for the board animation
+    global $post;
+    $post = $board_post;
     setup_postdata( $post );
 
     require get_stylesheet_directory() . '/board-animation-markup.php';
 
+    // Restore original post data
     wp_reset_postdata();
-
-}, 5 );
+}
+add_action( 'woocommerce_after_single_product_summary', 'lullberry_display_board_animation_on_product_page', 5 );
