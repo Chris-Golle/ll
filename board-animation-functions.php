@@ -71,20 +71,72 @@ function save_board_animation_meta($post_id) {
     }
 }
 
-// 4. Enqueue Scripts (Only for the single board page)
-add_action('wp_enqueue_scripts', 'enqueue_board_animation_assets');
+// 4. Enqueue Board Animation Assets (CPT + WooCommerce products)
+add_action( 'wp_enqueue_scripts', 'enqueue_board_animation_assets' );
+
 function enqueue_board_animation_assets() {
-    if (is_singular('board_animation')) {
-        wp_enqueue_style('board-style', get_stylesheet_directory_uri() . '/css/board-animation.css', array(), '1.1');
-        wp_enqueue_script('board-script', get_stylesheet_directory_uri() . '/board-animation.js', array('jquery'), '1.1', true);
 
-        // Pass PHP data to JS
-        $messages = get_post_meta(get_the_ID(), '_board_messages', true) ?: [];
-        $messages = array_map(function($m) { return str_replace('{{NEWLINE}}', "\n", $m); }, $messages);
+    $board_post_id = null;
 
-        wp_localize_script('board-script', 'boardAnimationData', array('messages' => $messages));
+    // Case 1: Single board_animation CPT page
+    if ( is_singular( 'board_animation' ) ) {
+        $board_post_id = get_the_ID();
     }
+
+    // Case 2: WooCommerce product page with linked board animation (ACF)
+    elseif ( function_exists( 'is_product' ) && is_product() && function_exists( 'get_field' ) ) {
+        $linked_board_id = get_field( 'board_animation' );
+        if ( $linked_board_id ) {
+            $board_post_id = $linked_board_id;
+        }
+    }
+
+    // If no board animation is relevant, bail early
+    if ( ! $board_post_id ) {
+        return;
+    }
+
+    // Enqueue CSS
+    wp_enqueue_style(
+        'board-style',
+        get_stylesheet_directory_uri() . '/css/board-animation.css',
+        array(),
+        '1.1'
+    );
+
+    // Enqueue JS
+    wp_enqueue_script(
+        'board-script',
+        get_stylesheet_directory_uri() . '/board-animation.js',
+        array( 'jquery' ),
+        '1.1',
+        true
+    );
+
+    // Prepare messages for JS
+    $messages = get_post_meta( $board_post_id, '_board_messages', true );
+    if ( ! is_array( $messages ) ) {
+        $messages = [];
+    }
+
+    $messages = array_map(
+        function ( $m ) {
+            return str_replace( '{{NEWLINE}}', "\n", $m );
+        },
+        $messages
+    );
+
+    // Localize data for JS
+    wp_localize_script(
+        'board-script',
+        'boardAnimationData',
+        array(
+            'messages' => $messages,
+            'boardId'  => $board_post_id,
+        )
+    );
 }
+
 
 // 5. The Modern Iframe Modal System
 // Shortcode: [board_modal post_id="123" button_text="Open"]

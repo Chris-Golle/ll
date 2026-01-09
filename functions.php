@@ -12,6 +12,8 @@ add_action( 'wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_styles' );
 
 /* enqueue child theme last to avoid the need for !important overrides */
 
+
+
 // add_theme_support( 'post-thumbnails' );
     
     $version = wp_get_theme()->get('Version');
@@ -803,3 +805,21 @@ add_filter('tiny_mce_before_init', 'tinymce_fix');
 // END Stop removing span tags from WordPress
 // Include board animation functionality
 include(get_stylesheet_directory() . '/board-animation-functions.php');
+
+add_action( 'woocommerce_single_product_summary', function() {
+
+    if ( ! function_exists( 'get_field' ) ) return;
+
+    $board_id = get_field( 'board_animation' );
+    if ( ! $board_id ) return;
+
+    $post = get_post( $board_id );
+    if ( ! $post || $post->post_type !== 'board_animation' ) return;
+
+    setup_postdata( $post );
+
+    require get_stylesheet_directory() . '/board-animation-markup.php';
+
+    wp_reset_postdata();
+
+}, 25 );
