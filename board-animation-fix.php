@@ -188,7 +188,7 @@ add_action('wp_footer', function() {
     <?php endforeach; ?>
 <?php });
 
-add_action( 'woocommerce_after_single_product_summary', function() {
+add_action( 'woocommerce_before_single_product_summary', function() {
 
     if ( ! function_exists( 'get_field' ) ) return;
 
