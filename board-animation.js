@@ -1,5 +1,8 @@
-jQuery(document).ready(function($) {
-    // ========================================
+window.initBoardAnimation = function () {
+    if (window.__boardAnimationRunning) return;
+window.__boardAnimationRunning = true;
+
+  const $ = jQuery;    // ========================================
     // BOARD ANIMATION INITIALIZATION
     // ========================================
     
@@ -196,52 +199,47 @@ jQuery(document).ready(function($) {
         // Calculate trapezoid effect synchronized with board rotation
         // Use the same progress calculation as the board rotation
         // Ensure we never exceed maximum rotation in trapezoid calculations
-        const clampedTrapezoidRotation = Math.min(currentRotation, maxRotation);
-        const trapezoidProgress = Math.min(clampedTrapezoidRotation / maxRotation, 1);
+        // const clampedTrapezoidRotation = Math.min(currentRotation, maxRotation);
+        // const trapezoidProgress = Math.min(clampedTrapezoidRotation / maxRotation, 1);
         
         // Distance between boards: starts at 400px, goes down to 300px
-        const boardDistance = 400 - (trapezoidProgress * 100);
+        // const boardDistance = 400 - (trapezoidProgress * 100);
         
-        // Board size: starts at 150px, grows to 200px
-        const boardSize = 150 + (trapezoidProgress * 50);
-        
-        // Update CSS custom properties for positioning (don't modify board dimensions directly)
-        if (animationContainer) {
-            animationContainer.style.setProperty('--board-distance', `${boardDistance}px`);
-            animationContainer.style.setProperty('--board-size', `${boardSize}px`);
-        }
+        // Update CSS custom property for board distance only
+        // Do NOT update board size - let CSS handle fixed dimensions
+        // if (animationContainer) {
+        //     animationContainer.style.setProperty('--board-distance', `${boardDistance}px`);
+        // }
 
-        // Update trapezoid dimensions based on rotation progress (synchronized with boards)
-        const trapezoidHeight = 333 - (trapezoidProgress * 222); // Shrinks from 333px to 111px
-        const trapezoidTopWidth = 111 + (trapezoidProgress * 88); // Grows from 111px to 199px
-        const trapezoidBottomWidth = 222; // Stays constant at 222px
-        
-        // Calculate the offset for the top edge to create trapezoid
-        const trapezoidTopOffset = (trapezoidBottomWidth - trapezoidTopWidth) / 2;
-        
-        // Update the left trapezoid shape
-        const leftTrapezoidSvg = document.getElementById('trapezoid-svg');
-        const leftTrapezoidPolygon = document.getElementById('trapezoid-polygon');
-        if (leftTrapezoidSvg && leftTrapezoidPolygon) {
-            leftTrapezoidSvg.setAttribute('height', trapezoidHeight);
-            leftTrapezoidSvg.setAttribute('viewBox', `0 0 ${trapezoidBottomWidth} ${trapezoidHeight}`);
-            
-            // Update the polygon points for the trapezoid
-            const leftPoints = `${trapezoidTopOffset},0 ${trapezoidTopOffset + trapezoidTopWidth},0 ${trapezoidBottomWidth},${trapezoidHeight} 0,${trapezoidHeight}`;
-            leftTrapezoidPolygon.setAttribute('points', leftPoints);
-        }
-        
-        // Update the right trapezoid shape
-        const rightTrapezoidSvg = document.getElementById('right-trapezoid-svg');
-        const rightTrapezoidPolygon = document.getElementById('right-trapezoid-polygon');
-        if (rightTrapezoidSvg && rightTrapezoidPolygon) {
-            rightTrapezoidSvg.setAttribute('height', trapezoidHeight);
-            rightTrapezoidSvg.setAttribute('viewBox', `0 0 ${trapezoidBottomWidth} ${trapezoidHeight}`);
-            
-            // Update the polygon points for the right trapezoid (mirrored)
-            const rightPoints = `${trapezoidTopOffset + trapezoidTopWidth},0 ${trapezoidTopOffset},0 0,${trapezoidHeight} ${trapezoidBottomWidth},${trapezoidHeight}`;
-            rightTrapezoidPolygon.setAttribute('points', rightPoints);
-        }
+      // === KEEP AND UPDATE THIS BLOCK (trapezoid morphing) ===
+// Use full rotation progress for trapezoid animation
+const trapezoidProgress = Math.min(currentRotation / maxRotation, 1);
+
+// Trapezoid dimensions: shrink height, widen top
+const trapezoidHeight = 333 - (trapezoidProgress * 222); // 333 → 111px
+const trapezoidTopWidth = 111 + (trapezoidProgress * 88); // 111 → 199px
+const trapezoidBottomWidth = 222; // constant
+const trapezoidTopOffset = (trapezoidBottomWidth - trapezoidTopWidth) / 2;
+
+// Update left trapezoid
+const leftTrapezoidSvg = document.getElementById('trapezoid-svg');
+const leftTrapezoidPolygon = document.getElementById('trapezoid-polygon');
+if (leftTrapezoidSvg && leftTrapezoidPolygon) {
+    leftTrapezoidSvg.setAttribute('height', trapezoidHeight);
+    leftTrapezoidSvg.setAttribute('viewBox', `0 0 ${trapezoidBottomWidth} ${trapezoidHeight}`);
+    const leftPoints = `${trapezoidTopOffset},0 ${trapezoidTopOffset + trapezoidTopWidth},0 ${trapezoidBottomWidth},${trapezoidHeight} 0,${trapezoidHeight}`;
+    leftTrapezoidPolygon.setAttribute('points', leftPoints);
+}
+
+// Update right trapezoid (mirrored)
+const rightTrapezoidSvg = document.getElementById('right-trapezoid-svg');
+const rightTrapezoidPolygon = document.getElementById('right-trapezoid-polygon');
+if (rightTrapezoidSvg && rightTrapezoidPolygon) {
+    rightTrapezoidSvg.setAttribute('height', trapezoidHeight);
+    rightTrapezoidSvg.setAttribute('viewBox', `0 0 ${trapezoidBottomWidth} ${trapezoidHeight}`);
+    const rightPoints = `${trapezoidTopOffset + trapezoidTopWidth},0 ${trapezoidTopOffset},0 0,${trapezoidHeight} ${trapezoidBottomWidth},${trapezoidHeight}`;
+    rightTrapezoidPolygon.setAttribute('points', rightPoints);
+}
 
         // Update text based on rotation
         // Map rotation to message pairs: 0-180° = first pair, 180-360° = second pair
@@ -411,7 +409,6 @@ jQuery(document).ready(function($) {
     // Set initial CSS custom properties
     if (animationContainer) {
         animationContainer.style.setProperty('--board-distance', '400px');
-        animationContainer.style.setProperty('--board-size', '150px');
     }
     
     // Calculate optimal font size based on longest text item
@@ -668,4 +665,32 @@ jQuery(document).ready(function($) {
         }
     });
     
+};
+
+// LOGIC TO HANDLE INIT TIMING
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. If we are NOT in an iframe (Direct View), run immediately
+    if (window.self === window.top) {
+        window.initBoardAnimation();
+    }
+    // 2. If we ARE in an iframe, DO NOTHING. 
+    // We will wait for the Parent Page to tell us to start.
+});
+
+document.addEventListener('click', function (e) {
+  const btn = e.target.closest('.board-modal-trigger');
+  if (!btn) return;
+
+  const id = btn.dataset.modalId;
+  const dlg = document.getElementById('board-modal-' + id);
+  if (!dlg) return;
+
+  dlg.showModal();
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+    window.initBoardAnimation();      
+});
+
+  });
 });
