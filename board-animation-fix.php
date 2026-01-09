@@ -150,9 +150,38 @@ function enqueue_board_animation_assets() {
         array(
             'messages' => $messages,
             'boardId'  => $board_post_id,
+            'ajax_url' => admin_url( 'admin-ajax.php' ),
+            'nonce'    => wp_create_nonce( 'load-board-animation-nonce' ),
         )
     );
 }
+
+// AJAX handler to load board animation content
+function lullberry_load_board_animation_content() {
+    check_ajax_referer( 'load-board-animation-nonce', 'nonce' );
+
+    $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
+    if ( ! $post_id || 'board_animation' !== get_post_type( $post_id ) ) {
+        wp_send_json_error( 'Invalid post ID.' );
+    }
+
+    // Setup post data
+    global $post;
+    $post = get_post( $post_id );
+    setup_postdata( $post );
+
+    // Capture the output of the template file
+    ob_start();
+    require get_stylesheet_directory() . '/board-animation-markup.php';
+    $content = ob_get_clean();
+
+    // Reset post data
+    wp_reset_postdata();
+
+    wp_send_json_success( $content );
+}
+add_action( 'wp_ajax_load_board_animation', 'lullberry_load_board_animation_content' );
+add_action( 'wp_ajax_nopriv_load_board_animation', 'lullberry_load_board_animation_content' );
 
 
 // 5. The Modern Iframe Modal System
@@ -160,34 +189,39 @@ function enqueue_board_animation_assets() {
 add_shortcode('board_modal', 'render_board_modal_button');
 function render_board_modal_button($atts) {
     $atts = shortcode_atts(array('post_id' => 0, 'button_text' => 'Open'), $atts);
-    if (!$atts['post_id']) return '';
+    if (!$atts['post_id']) {
+        return '';
+    }
 
-    $url = get_permalink($atts['post_id']);
-    
-    // Queue modal for footer
-    global $board_modals;
-    $board_modals[$atts['post_id']] = $url;
+    // This ensures the single modal is added to the footer only once
+    add_action('wp_footer', 'lullberry_render_single_board_modal', 1);
 
     return sprintf(
-        '<button class="board-modal-trigger" data-modal-id="%d">%s</button>',
-        $atts['post_id'], esc_html($atts['button_text'])
+        '<button class="board-modal-trigger" data-post-id="%d">%s</button>',
+        absint($atts['post_id']),
+        esc_html($atts['button_text'])
     );
 }
 
-// Render Modals and Script in Footer
-function lullberry_render_board_modals_in_footer() {
-    global $board_modals;
-    if (empty($board_modals)) return;
-
-    // Output Dialogs
-    foreach ($board_modals as $id => $url) : ?>
-        <dialog id="board-modal-<?php echo intval($id); ?>" class="board-modal">
+// Renders a single, reusable modal in the footer
+function lullberry_render_single_board_modal() {
+    // Ensure this function runs only once
+    static $modal_rendered = false;
+    if ($modal_rendered) {
+        return;
+    }
+    $modal_rendered = true;
+    ?>
+    <dialog id="board-animation-modal" class="board-modal">
+        <div class="board-modal-content">
             <button class="board-modal-close" aria-label="Close">×</button>
-            <iframe src="<?php echo esc_url($url); ?>"></iframe>
-        </dialog>
-    <?php endforeach;
+            <div class="board-modal-body">
+                <!-- AJAX content will be loaded here -->
+            </div>
+        </div>
+    </dialog>
+    <?php
 }
-add_action('wp_footer', 'lullberry_render_board_modals_in_footer');
 
 function lullberry_display_board_animation_on_product_page() {
     if ( ! function_exists( 'get_field' ) ) {
