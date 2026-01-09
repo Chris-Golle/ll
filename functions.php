@@ -806,7 +806,7 @@ add_filter('tiny_mce_before_init', 'tinymce_fix');
 // Include board animation functionality
 include(get_stylesheet_directory() . '/board-animation-functions.php');
 
-add_action( 'woocommerce_single_product_summary', function() {
+add_action( 'woocommerce_after_single_product_summary', function() {
 
     if ( ! function_exists( 'get_field' ) ) return;
 
