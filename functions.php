@@ -806,20 +806,3 @@ add_filter('tiny_mce_before_init', 'tinymce_fix');
 // Include board animation functionality
 include(get_stylesheet_directory() . '/board-animation-functions.php');
 
-add_action( 'woocommerce_after_single_product_summary', function() {
-
-    if ( ! function_exists( 'get_field' ) ) return;
-
-    $board_id = get_field( 'board_animation' );
-    if ( ! $board_id ) return;
-
-    $post = get_post( $board_id );
-    if ( ! $post || $post->post_type !== 'board_animation' ) return;
-
-    setup_postdata( $post );
-
-    require get_stylesheet_directory() . '/board-animation-markup.php';
-
-    wp_reset_postdata();
-
-}, 25 );
