@@ -218,4 +218,4 @@ add_action( 'woocommerce_after_single_product_summary', function() {
 
     wp_reset_postdata();
 
-}, 25 );
+}, 15 );
