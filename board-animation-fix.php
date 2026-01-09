@@ -104,12 +104,29 @@ function enqueue_board_animation_assets() {
         '1.1'
     );
 
+    // Enqueue Modal CSS
+    wp_enqueue_style(
+        'board-modal-style',
+        get_stylesheet_directory_uri() . '/css/board-modal.css',
+        array(),
+        '1.0'
+    );
+
     // Enqueue JS
     wp_enqueue_script(
         'board-script',
         get_stylesheet_directory_uri() . '/board-animation.js',
         array( 'jquery' ),
         '1.1',
+        true
+    );
+
+    // Enqueue Modal JS
+    wp_enqueue_script(
+        'board-modal-script',
+        get_stylesheet_directory_uri() . '/board-modal.js',
+        array(),
+        '1.0',
         true
     );
 
@@ -164,42 +181,11 @@ add_action('wp_footer', function() {
 
     // Output Dialogs
     foreach ($board_modals as $id => $url) : ?>
-        <dialog id="board-modal-<?php echo intval($id); ?>" class="board-modal" style="width:100%; height:100%; border:none; padding:0; margin:0; max-width:100%; max-height:100%;">
-            <button class="board-modal-close" style="position:absolute; right:20px; top:20px; z-index:9999; cursor:pointer;" aria-label="Close">×</button>
-            <iframe src="<?php echo esc_url($url); ?>" style="width:100%; height:100%; border:none;"></iframe>
+        <dialog id="board-modal-<?php echo intval($id); ?>" class="board-modal">
+            <button class="board-modal-close" aria-label="Close">×</button>
+            <iframe src="<?php echo esc_url($url); ?>"></iframe>
         </dialog>
     <?php endforeach; ?>
-
-    <script>
-    // Handle Opening
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('.board-modal-trigger');
-        if (!btn) return;
-        
-        const dlg = document.getElementById('board-modal-' + btn.dataset.modalId);
-        if (dlg) {
-            dlg.showModal();
-            // Trigger Animation inside Iframe after open
-            const iframe = dlg.querySelector('iframe');
-            setTimeout(() => {
-                if (iframe.contentWindow && iframe.contentWindow.initBoardAnimation) {
-                    iframe.contentWindow.initBoardAnimation(); 
-                }
-            }, 100);
-        }
-    });
-
-    // Handle Closing
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('board-modal-close')) {
-            e.target.closest('dialog').close();
-        }
-        // Click backdrop to close
-        if (e.target.tagName === 'DIALOG') {
-            e.target.close();
-        }
-    });
-    </script>
 <?php });
 
 add_action( 'woocommerce_after_single_product_summary', function() {
@@ -218,4 +204,4 @@ add_action( 'woocommerce_after_single_product_summary', function() {
 
     wp_reset_postdata();
 
-}, 15 );
+}, 5 );
