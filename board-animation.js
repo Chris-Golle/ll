@@ -430,70 +430,51 @@ window.initBoardAnimation = function () {
         window.addEventListener('resize', handleScroll);
     }
 
-    // Modal Handlers (Refactored to Vanilla JS)
-    document.addEventListener('click', async (e) => {
-        if (!e.target.matches('.board-animation-trigger')) return;
-
+    // Modal Handlers (unchanged)
+    $(document).on('click', '.board-animation-trigger', function(e) {
         e.preventDefault();
-        const postId = e.target.dataset.animationId;
-        const modal = document.getElementById('board-animation-modal');
-        const modalBody = modal.querySelector('.board-modal-body');
-
-        modal.classList.add('show');
-        modal.style.display = 'flex';
-        modalBody.innerHTML = '<div class="board-modal-loading">Loading animation...</div>';
-        document.body.style.overflow = 'hidden';
-
-        try {
-            const formData = new FormData();
-            formData.append('action', 'load_board_animation');
-            formData.append('post_id', postId);
-            formData.append('nonce', boardAnimationData.nonce);
-
-            const response = await fetch(boardAnimationData.ajax_url, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
+        const postId = $(this).data('animation-id');
+        const $modal = $('#board-animation-modal');
+        const $modalBody = $modal.find('.board-modal-body');
+        $modal.addClass('show').css('display', 'flex');
+        $modalBody.html('<div class="board-modal-loading">Loading animation...</div>');
+        $('body').css('overflow', 'hidden');
+        $.ajax({
+            url: boardAnimationData.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'load_board_animation',
+                post_id: postId,
+                nonce: boardAnimationData.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    const data = response.data;
+                    let html = '';
+                    if (data.title) html += '<h2 class="board-modal-title">' + data.title + '</h2>';
+                    if (data.featured_image) html += '<div class="board-modal-image"><img src="' + data.featured_image + '" alt="' + data.title + '"></div>';
+                    if (data.content) html += '<div class="board-modal-content-area">' + data.content + '</div>';
+                    $modalBody.html(html);
+                } else {
+                    $modalBody.html('<p class="error">Failed to load animation.</p>');
+                }
+            },
+            error: function() {
+                $modalBody.html('<p class="error">An error occurred. Please try again.</p>');
             }
-
-            const result = await response.json();
-
-            if (result.success) {
-                const data = result.data;
-                let html = '';
-                if (data.title) html += `<h2 class="board-modal-title">${data.title}</h2>`;
-                if (data.featured_image) html += `<div class="board-modal-image"><img src="${data.featured_image}" alt="${data.title}"></div>`;
-                if (data.content) html += `<div class="board-modal-content-area">${data.content}</div>`;
-                modalBody.innerHTML = html;
-            } else {
-                modalBody.innerHTML = '<p class="error">Failed to load animation.</p>';
-            }
-        } catch (error) {
-            console.error('Error fetching board animation:', error);
-            modalBody.innerHTML = '<p class="error">An error occurred. Please try again.</p>';
-        }
+        });
     });
 
     function closeBoardModal() {
-        const modal = document.getElementById('board-animation-modal');
-        modal.classList.remove('show');
-        setTimeout(() => modal.style.display = 'none', 300); // For fadeOut effect
-        document.body.style.overflow = '';
+        $('#board-animation-modal').removeClass('show').fadeOut(300);
+        $('body').css('overflow', '');
     }
-
-    document.getElementById('close-board-modal')?.addEventListener('click', closeBoardModal);
-    document.getElementById('board-animation-modal')?.addEventListener('click', (e) => {
-        if (e.target.id === 'board-animation-modal') {
-            closeBoardModal();
-        }
+    $('#close-board-modal').on('click', closeBoardModal);
+    $('#board-animation-modal').on('click', function(e) {
+        if ($(e.target).is('#board-animation-modal')) closeBoardModal();
     });
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && document.getElementById('board-animation-modal')?.classList.contains('show')) {
-            closeBoardModal();
-        }
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' && $('#board-animation-modal').hasClass('show')) closeBoardModal();
     });
 };
 
