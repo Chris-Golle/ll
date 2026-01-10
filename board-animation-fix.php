@@ -196,9 +196,23 @@ function lullberry_product_quick_view_shortcode($atts) {
     // Use 'product_id' if available, otherwise fall back to 'id'
     $product_id = absint($atts['product_id'] ? $atts['product_id'] : $atts['id']);
 
-    if (empty($product_id) || 'product' !== get_post_type($product_id)) {
+    // --- DEBUGGING START ---
+    error_log('[Quick View Debug] Shortcode attributes received: ' . print_r($atts, true));
+    error_log('[Quick View Debug] Processed Product ID: ' . $product_id);
+
+    if (empty($product_id)) {
+        error_log('[Quick View Debug] Exiting: Product ID is empty.');
         return '';
     }
+
+    $post_type = get_post_type($product_id);
+    error_log('[Quick View Debug] Post type for ID ' . $product_id . ' is: ' . $post_type);
+
+    if ('product' !== $post_type) {
+        error_log('[Quick View Debug] Exiting: Post type is not "product".');
+        return '';
+    }
+    // --- DEBUGGING END ---
 
     // Enqueue scripts needed for Add to Cart to work in the modal
     wp_enqueue_script('wc-add-to-cart');
