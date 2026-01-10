@@ -34,7 +34,7 @@ function lullberry_quick_view_shortcode( $atts ) {
 
     // Register the main JavaScript file which contains all modal and animation logic.
     wp_register_script(
-        'lullberry-quick-view-js',
+        'lullberry-feature-quick-view-js',
         get_stylesheet_directory_uri() . '/assets/js/quick-view.js',
         array( 'jquery' ),
         filemtime( get_stylesheet_directory() . '/assets/js/quick-view.js' ), // Cache busting
@@ -44,7 +44,7 @@ function lullberry_quick_view_shortcode( $atts ) {
     // Pass critical data from PHP to our JavaScript file.
     // This includes the URL for AJAX requests and a security nonce.
     wp_localize_script(
-        'lullberry-quick-view-js',
+        'lullberry-feature-quick-view-js',
         'lullberry_quick_view_ajax',
         array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
@@ -53,11 +53,11 @@ function lullberry_quick_view_shortcode( $atts ) {
     );
 
     // Enqueue the script to be loaded on the page.
-    wp_enqueue_script( 'lullberry-quick-view-js' );
+    wp_enqueue_script( 'lullberry-feature-quick-view-js' );
 
     // Enqueue the stylesheet for the modal.
     wp_enqueue_style(
-        'lullberry-quick-view-css',
+        'lullberry-feature-quick-view-style',
         get_stylesheet_directory_uri() . '/assets/css/quick-view.css',
         array(),
         filemtime( get_stylesheet_directory() . '/assets/css/quick-view.css' ) // Cache busting
@@ -65,7 +65,7 @@ function lullberry_quick_view_shortcode( $atts ) {
 
     // Also enqueue the separate stylesheet for the board animation to ensure it's styled correctly inside the modal.
     wp_enqueue_style(
-        'board-animation-css',
+        'lullberry-feature-board-animation-style',
         get_stylesheet_directory_uri() . '/css/board-animation.css',
         array(),
         filemtime( get_stylesheet_directory() . '/css/board-animation.css' ) // Cache busting
@@ -146,8 +146,8 @@ function lullberry_ajax_load_product_quick_view() {
     $animation_html = '';
 
     if ( $animation_id ) {
-        // Retrieve the single array of messages.
-        $messages = get_post_meta( $animation_id, '_board_messages', true );
+        // Retrieve the single array of messages using the correct ACF function.
+        $messages = get_field( '_board_messages', $animation_id );
         if ( ! is_array( $messages ) ) {
             $messages = [];
         }

@@ -63,6 +63,9 @@ jQuery(document).ready(function($) {
                                 window.initBoardAnimation();
                             }
                         }, 100);
+                    } else {
+                        // If there's no animation data, we don't need to do anything extra,
+                        // but the modal will still show the product info.
                     }
                 } else {
                     $modalBody.html('<p class="error">' + (response.data.message || 'Failed to load product details.') + '</p>');

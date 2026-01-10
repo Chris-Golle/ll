@@ -86,7 +86,7 @@ function enqueue_single_board_animation_assets() {
 
     // Enqueue the animation-specific stylesheet.
     wp_enqueue_style(
-        'board-animation-css',
+        'lullberry-cpt-board-animation-style',
         get_stylesheet_directory_uri() . '/css/board-animation.css',
         array(),
         filemtime( get_stylesheet_directory() . '/css/board-animation.css' )
@@ -94,7 +94,7 @@ function enqueue_single_board_animation_assets() {
 
     // Enqueue the original board animation JS (it's self-contained for the single page).
     wp_enqueue_script(
-        'board-animation-js',
+        'lullberry-cpt-board-animation-js',
         get_stylesheet_directory_uri() . '/board-animation.js',
         array( 'jquery' ),
         filemtime( get_stylesheet_directory() . '/board-animation.js' ),
@@ -102,7 +102,7 @@ function enqueue_single_board_animation_assets() {
     );
 
     // Prepare messages for the JS.
-    $messages = get_post_meta( $board_post_id, '_board_messages', true );
+    $messages = get_field( '_board_messages', $board_post_id );
     if ( ! is_array( $messages ) ) {
         $messages = [];
     }
