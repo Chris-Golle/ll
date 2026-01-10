@@ -1,4 +1,11 @@
-window.initBoardAnimation = function () {
+window.initBoardAnimation = function (scrollContainer = window) {
+    // If we are passed a DOM element, we can safely re-run the init.
+    // We reset the running flag for this specific context.
+    const isModalContext = scrollContainer !== window;
+    if (isModalContext) {
+        window.__boardAnimationRunning = false;
+    }
+
     if (window.__boardAnimationRunning) return;
     window.__boardAnimationRunning = true;
 
@@ -12,6 +19,8 @@ window.initBoardAnimation = function () {
 
     // Animation elements
     const animationContainer = document.getElementById('animation-container');
+    if (!animationContainer) return;
+
     const board = document.getElementById('board');
     const frontFace = document.getElementById('front-face');
     const backFace = document.getElementById('back-face');
@@ -99,12 +108,14 @@ window.initBoardAnimation = function () {
         
         // ROTATION CALCULATIONS
         const containerHeight = animationContainer.offsetHeight;
-        const viewportHeight = window.innerHeight;
+        const viewportHeight = scrollContainer === window ? window.innerHeight : scrollContainer.clientHeight;
         
-        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        // Use the correct scroll top value based on the container
+        const scrollTop = scrollContainer === window ? (window.pageYOffset || document.documentElement.scrollTop) : scrollContainer.scrollTop;
         const containerTop = animationContainer.offsetTop;
         
-        const progress = Math.max(0, Math.min(1, (scrollTop - containerTop) / (containerHeight - viewportHeight)));
+        // Adjust progress calculation for the container's context
+        const progress = Math.max(0, Math.min(1, (scrollTop) / (containerHeight - viewportHeight)));
         
         const totalRotations = 20; 
         const maxRotation = totalRotations * 180;
@@ -404,7 +415,8 @@ window.initBoardAnimation = function () {
     }
     
     forceMobileLayoutIfNeeded();
-    window.addEventListener('resize', forceMobileLayoutIfNeeded);
+    // Use the correct scroll container for the resize event as well
+    scrollContainer.addEventListener('resize', forceMobileLayoutIfNeeded);
     
     const initialHeight = 333;
     const initialTopWidth = 111;
@@ -425,9 +437,10 @@ window.initBoardAnimation = function () {
     
     handleScroll();
     
-    if (typeof window !== 'undefined') {
-        window.addEventListener('scroll', handleScroll);
-        window.addEventListener('resize', handleScroll);
+    // Bind listeners to the correct container
+    if (typeof scrollContainer !== 'undefined') {
+        scrollContainer.addEventListener('scroll', handleScroll);
+        scrollContainer.addEventListener('resize', handleScroll);
     }
 
     // Modal Handlers (Refactored to Vanilla JS)
@@ -498,6 +511,7 @@ window.initBoardAnimation = function () {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
+    // Initialize for the main page (defaulting to window)
     if (window.self === window.top) window.initBoardAnimation();
 });
 

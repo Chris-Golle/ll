@@ -104,9 +104,10 @@
 					contentContainer.innerHTML = result.data;
 
 					// 7. Initialize Animation: Call the global init function for the board animation.
-					// This is idempotent and safe to call multiple times.
+					// Pass the overlay element as the scroll container.
 					if ( typeof window.initBoardAnimation === 'function' ) {
-						window.initBoardAnimation();
+						const overlay = document.getElementById('product-overlay');
+						window.initBoardAnimation(overlay);
 					}
 				} else {
 					contentContainer.innerHTML = `<p>Error: ${ result.data }</p>`;
