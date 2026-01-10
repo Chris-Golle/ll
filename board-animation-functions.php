@@ -102,12 +102,9 @@ function enqueue_single_board_animation_assets() {
     );
 
     // Prepare messages for the JS.
-    $messages = [];
-    for ( $i = 1; $i <= 40; $i++ ) {
-        $message = get_post_meta( $board_post_id, 'message_' . $i, true );
-        if ( $message ) {
-            $messages[] = esc_textarea( $message );
-        }
+    $messages = get_post_meta( $board_post_id, '_board_messages', true );
+    if ( ! is_array( $messages ) ) {
+        $messages = [];
     }
 
     // Localize data for the script.
