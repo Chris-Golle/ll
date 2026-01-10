@@ -20,7 +20,8 @@ html, body {
 global $post;
 setup_postdata( $post );
 
-require get_stylesheet_directory() . '/board-animation-markup.php';
+// Use the correct WordPress function to load the template part from the /template-parts/ directory.
+get_template_part('template-parts/board-animation-markup');
 
 wp_reset_postdata();
 
