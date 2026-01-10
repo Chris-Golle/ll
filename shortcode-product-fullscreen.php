@@ -41,7 +41,7 @@ function render_product_fullscreen_shortcode( $atts ) {
 	}
 
 	// Enqueue assets required for the overlay.
-	enqueue_product_overlay_assets();
+	enqueue_product_overlay_assets( $product_id );
 
 	// Return a button that will trigger the overlay.
 	// The data-product-id attribute is used by product-overlay.js to fetch the correct product.
@@ -58,7 +58,7 @@ function render_product_fullscreen_shortcode( $atts ) {
  * This function is designed to be called only when the shortcode is rendered,
  * ensuring that these assets are only loaded on pages where they are needed.
  */
-function enqueue_product_overlay_assets() {
+function enqueue_product_overlay_assets( $product_id ) {
 	// Ensure assets are only enqueued once.
 	static $assets_enqueued = false;
 	if ( $assets_enqueued ) {
