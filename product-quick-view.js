@@ -13,9 +13,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = new FormData();
             formData.append('action', 'lullberry_load_product_quick_view');
             formData.append('product_id', productId);
-            formData.append('nonce', boardAnimationData.nonce); // Reusing the same nonce for simplicity
+            formData.append('nonce', lullberry_quick_view_data.nonce);
 
-            const response = await fetch(boardAnimationData.ajax_url, {
+            const response = await fetch(lullberry_quick_view_data.ajax_url, {
                 method: 'POST',
                 body: formData
             });

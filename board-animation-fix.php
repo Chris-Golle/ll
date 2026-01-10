@@ -142,8 +142,6 @@ function enqueue_board_animation_assets() {
         array(
             'messages' => $messages,
             'boardId'  => $board_post_id,
-            'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'load-board-animation-nonce' ),
         )
     );
 }
@@ -215,6 +213,16 @@ function lullberry_product_quick_view_shortcode($atts) {
         array('wc-add-to-cart-variation'), // Dependency
         '1.0',
         true
+    );
+
+    // Provide AJAX URL and nonce to the script
+    wp_localize_script(
+        'product-quick-view-script',
+        'lullberry_quick_view_data',
+        array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce'    => wp_create_nonce('load-board-animation-nonce'),
+        )
     );
 
     // Ensure the single reusable modal is added to the footer
