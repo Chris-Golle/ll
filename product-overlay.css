@@ -1,0 +1,60 @@
+/**
+ * Styles for the product fullscreen overlay.
+ *
+ * This file contains all the necessary styles for the overlay,
+ * ensuring a CSP-safe implementation.
+ *
+ * @package TwentyTwentyFive-Child
+ */
+
+/* Prevents scrolling on the body when the overlay is active. */
+body.product-overlay-active {
+	overflow: hidden;
+}
+
+/* The main overlay element. */
+.product-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.8);
+	z-index: 99999;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow-y: auto; /* Allows the overlay itself to scroll if content is too tall. */
+}
+
+/* The content container within the overlay. */
+.product-overlay-content {
+	background-color: #fff;
+	padding: 40px;
+	border-radius: 8px;
+	max-width: 90%;
+	width: 1200px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	position: relative;
+	margin: 5vh auto; /* Provides some space from the top and bottom of the viewport. */
+}
+
+/* The close button for the overlay. */
+.product-overlay-close {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	background: none;
+	border: none;
+	font-size: 2.5rem;
+	line-height: 1;
+	color: #333;
+	cursor: pointer;
+	padding: 0;
+	opacity: 0.7;
+	transition: opacity 0.2s ease;
+}
+
+.product-overlay-close:hover {
+	opacity: 1;
+}
