@@ -114,7 +114,7 @@ function enqueue_single_board_animation_assets() {
 
     // Localize data for the script.
     wp_localize_script(
-        'board-animation-js',
+        'lullberry-cpt-board-animation-js',
         'boardAnimationData',
         array(
             'messages' => $processed_messages,
