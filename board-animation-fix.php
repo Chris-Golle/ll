@@ -152,17 +152,6 @@ function enqueue_board_animation_assets() {
             'boardId'  => $board_post_id,
         )
     );
-
-    // Enqueue the CPT-specific initializer script only on the CPT single page.
-    if ( is_singular( 'board_animation' ) ) {
-        wp_enqueue_script(
-            'cpt-animation-init',
-            get_stylesheet_directory_uri() . '/cpt-animation-init.js',
-            array( 'board-script' ), // Depends on the main animation script.
-            '1.0',
-            true
-        );
-    }
 }
 
 

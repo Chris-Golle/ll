@@ -805,7 +805,5 @@ add_filter('tiny_mce_before_init', 'tinymce_fix');
 // END Stop removing span tags from WordPress
 // Include board animation functionality
 require_once get_stylesheet_directory() . '/board-animation-fix.php';
-
-// Include product fullscreen overlay functionality.
 require_once get_stylesheet_directory() . '/shortcode-product-fullscreen.php';
 require_once get_stylesheet_directory() . '/ajax-load-product.php';
