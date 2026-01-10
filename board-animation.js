@@ -496,21 +496,3 @@ window.initBoardAnimation = function () {
         if (e.key === 'Escape' && $('#board-animation-modal').hasClass('show')) closeBoardModal();
     });
 };
-
-document.addEventListener("DOMContentLoaded", function() {
-    if (window.self === window.top) window.initBoardAnimation();
-});
-
-document.addEventListener('click', function (e) {
-  const btn = e.target.closest('.board-modal-trigger');
-  if (!btn) return;
-  const id = btn.dataset.modalId;
-  const dlg = document.getElementById('board-modal-' + id);
-  if (!dlg) return;
-  dlg.showModal();
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-        window.initBoardAnimation();      
-    });
-  });
-});
