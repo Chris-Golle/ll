@@ -24,7 +24,7 @@ setup_postdata( $post );
 get_template_part('template-parts/board-animation-markup');
 
 // Call the animation initialization function directly after the markup is rendered.
-echo '<script type="text/javascript">document.addEventListener("DOMContentLoaded", function() { if (typeof window.initBoardAnimation === "function") { window.initBoardAnimation(); } });</script>';
+echo '<script type="text/javascript">if (typeof window.initBoardAnimation === "function") { window.initBoardAnimation(); }</script>';
 
 wp_reset_postdata();
 

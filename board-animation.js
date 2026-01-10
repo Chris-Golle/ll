@@ -1,29 +1,18 @@
-console.log("board-animation.js loaded");
-
 window.initBoardAnimation = function () {
-    console.log("initBoardAnimation function started.");
-    console.log("boardAnimationData received:", window.boardAnimationData);
-
     if (window.__boardAnimationRunning) {
-        console.log("Animation already running, exiting.");
         return;
     }
     window.__boardAnimationRunning = true;
-    console.log("Animation flag set to true.");
 
     const $ = jQuery;
     // ========================================
     // BOARD ANIMATION INITIALIZATION
     // ========================================
-    console.log("Step 1: Getting messages from data object.");
     const messages = window.boardAnimationData ? window.boardAnimationData.messages : [];
     if (messages.length === 0) {
-        console.log("No messages found, exiting animation logic.");
         return;
     }
-    console.log(`Step 1 Complete: Found ${messages.length} messages.`);
 
-    console.log("Step 2: Selecting DOM elements.");
     const animationContainer = document.getElementById('animation-container');
     const board = document.getElementById('board');
     const frontFace = document.getElementById('front-face');
@@ -33,10 +22,8 @@ window.initBoardAnimation = function () {
     const rightBackFace = document.getElementById('right-back-face');
 
     if (!animationContainer || !board || !frontFace || !backFace || !rightBoard || !rightFrontFace || !rightBackFace) {
-        console.error("One or more critical animation elements are missing from the DOM.");
         return;
     }
-    console.log("Step 2 Complete: All DOM elements found.");
 
     // Use WordPress messages
     const finalMessages = messages;
