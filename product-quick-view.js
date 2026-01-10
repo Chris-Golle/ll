@@ -27,19 +27,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const result = await response.json();
 
             if (result.success) {
-                modalBody.innerHTML = result.data;
+                const data = result.data;
+                modalBody.innerHTML = data.html;
 
-                // VERY IMPORTANT: Trigger WooCommerce events to make variations and add-to-cart work
-                // This tells the WooCommerce scripts to initialize the forms we just loaded via AJAX
-                const variationsForm = modalBody.querySelector('.variations_form');
-                if (variationsForm) {
-                    // wc-add-to-cart-variation.js listens for this event
-                    variationsForm.dispatchEvent(new Event('wc_variation_form'));
+                // CRITICAL: Manually create the animation data object for the script
+                if (window.initBoardAnimation && data.animation_data && data.animation_data.boardId) {
+                    window.boardAnimationData = data.animation_data;
+                    window.initBoardAnimation();
                 }
 
-                // CRITICAL: Initialize the animation script now that the markup is in the DOM
-                if (window.initBoardAnimation) {
-                    window.initBoardAnimation();
+                // VERY IMPORTANT: Trigger WooCommerce events to make variations work
+                const variationsForm = modalBody.querySelector('.variations_form');
+                if (variationsForm) {
+                    variationsForm.dispatchEvent(new Event('wc_variation_form'));
                 }
             } else {
                 throw new Error(result.data || 'Failed to load product content.');

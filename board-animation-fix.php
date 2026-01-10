@@ -73,32 +73,6 @@ function save_board_animation_meta($post_id) {
 
 
 
-function lullberry_enqueue_board_animation_assets($board_post_id) {
-    if (empty($board_post_id)) {
-        return;
-    }
-
-    wp_enqueue_style('board-style');
-    wp_enqueue_script('board-script');
-
-    $messages = get_post_meta($board_post_id, '_board_messages', true);
-    if (!is_array($messages)) {
-        $messages = [];
-    }
-
-    $messages = array_map(function ($m) {
-        return str_replace('{{NEWLINE}}', "\n", $m);
-    }, $messages);
-
-    wp_localize_script(
-        'board-script',
-        'boardAnimationData',
-        array(
-            'messages' => $messages,
-            'boardId'  => $board_post_id,
-        )
-    );
-}
 
 // AJAX handler for loading single product content
 function lullberry_load_product_quick_view() {
@@ -123,16 +97,32 @@ function lullberry_load_product_quick_view() {
     ob_start();
     // Use the standard WooCommerce template for single product content
     wc_get_template_part('content', 'single-product');
-    $content = ob_get_clean();
+    $html = ob_get_clean();
 
     wp_reset_postdata();
 
-    // After rendering the content, enqueue the necessary animation assets
-    // This is so the data is available in the AJAX response
+    // Get the animation data to send along with the HTML
     $board_id = get_field('board_animation', $product_id);
-    lullberry_enqueue_board_animation_assets($board_id);
+    $animation_data = array(
+        'messages' => array(),
+        'boardId'  => null,
+    );
 
-    wp_send_json_success($content);
+    if ($board_id) {
+        $messages = get_post_meta($board_id, '_board_messages', true);
+        if (!is_array($messages)) {
+            $messages = [];
+        }
+        $animation_data['messages'] = array_map(function ($m) {
+            return str_replace('{{NEWLINE}}', "\n", $m);
+        }, $messages);
+        $animation_data['boardId'] = $board_id;
+    }
+
+    wp_send_json_success(array(
+        'html'           => $html,
+        'animation_data' => $animation_data,
+    ));
 }
 add_action('wp_ajax_lullberry_load_product_quick_view', 'lullberry_load_product_quick_view');
 add_action('wp_ajax_nopriv_lullberry_load_product_quick_view', 'lullberry_load_product_quick_view');
@@ -165,12 +155,13 @@ function lullberry_product_quick_view_shortcode($atts) {
     wp_enqueue_script('wc-add-to-cart');
     wp_enqueue_script('wc-add-to-cart-variation');
 
-    // Enqueue our new quick view script
+    // Enqueue all scripts needed for the Quick View modal to function
+    wp_enqueue_script('board-script'); // Animation logic
     wp_enqueue_script(
         'product-quick-view-script',
         get_stylesheet_directory_uri() . '/product-quick-view.js',
-        array('wc-add-to-cart-variation'), // Dependency
-        '1.0',
+        array('wc-add-to-cart-variation', 'board-script'), // Dependencies
+        '1.1',
         true
     );
 
