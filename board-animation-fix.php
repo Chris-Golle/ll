@@ -33,7 +33,7 @@ function board_messages_callback($post) {
     $messages = get_post_meta($post->ID, '_board_messages', true);
     // Display logic... (kept simple for brevity, standard editor output)
     $display_text = (is_array($messages)) ? implode(',', array_map(function($m) { return '"'.str_replace('{{NEWLINE}}', "\n", $m).'"'; }, $messages)) : '';
-    
+
     echo '<p><strong>Format:</strong> "Message 1","Message 2"... (Use quotes)</p>';
     wp_editor($display_text, 'board_messages_text', array('media_buttons' => false, 'textarea_rows' => 10));
 }
@@ -58,7 +58,7 @@ function save_board_animation_meta($post_id) {
         $messages = $matches[1] ?: [];
         $messages = array_map('trim', $messages);
         $messages = array_filter($messages); // Remove empty
-        
+
         // Store as array
         update_post_meta($post_id, '_board_messages', $messages);
         // Backup as JSON
@@ -71,80 +71,6 @@ function save_board_animation_meta($post_id) {
     }
 }
 
-// 4. Enqueue Board Animation Assets (CPT + WooCommerce products)
-add_action( 'wp_enqueue_scripts', 'enqueue_board_animation_assets' );
-
-function enqueue_board_animation_assets() {
-
-    $board_post_id = null;
-
-    // Case 1: Single board_animation CPT page
-    if ( is_singular( 'board_animation' ) ) {
-        $board_post_id = get_the_ID();
-    }
-
-    // Case 2: WooCommerce product page with linked board animation (ACF)
-    elseif ( function_exists( 'is_product' ) && is_product() && function_exists( 'get_field' ) ) {
-        $linked_board_id = get_field( 'board_animation' );
-        if ( $linked_board_id ) {
-            $board_post_id = $linked_board_id;
-        }
-    }
-
-    // If no board animation is relevant, bail early
-    if ( ! $board_post_id ) {
-        return;
-    }
-
-    // Enqueue CSS
-    wp_enqueue_style(
-        'board-style',
-        get_stylesheet_directory_uri() . '/css/board-animation.css',
-        array(),
-        '1.1'
-    );
-
-    // Enqueue Modal CSS
-    wp_enqueue_style(
-        'board-modal-style',
-        get_stylesheet_directory_uri() . '/css/board-modal.css',
-        array(),
-        '1.0'
-    );
-
-    // Enqueue JS
-    wp_enqueue_script(
-        'board-script',
-        get_stylesheet_directory_uri() . '/board-animation.js',
-        array( 'jquery' ),
-        '1.1',
-        true
-    );
-
-
-    // Prepare messages for JS
-    $messages = get_post_meta( $board_post_id, '_board_messages', true );
-    if ( ! is_array( $messages ) ) {
-        $messages = [];
-    }
-
-    $messages = array_map(
-        function ( $m ) {
-            return str_replace( '{{NEWLINE}}', "\n", $m );
-        },
-        $messages
-    );
-
-    // Localize data for JS
-    wp_localize_script(
-        'board-script',
-        'boardAnimationData',
-        array(
-            'messages' => $messages,
-            'boardId'  => $board_post_id,
-        )
-    );
-}
 
 
 // AJAX handler for loading single product content
@@ -202,11 +128,13 @@ function lullberry_product_quick_view_shortcode($atts) {
         return '';
     }
 
-    // Enqueue scripts needed for Add to Cart AND the animation to work in the modal
+    // Enqueue all assets needed for the Quick View modal to function
+    wp_enqueue_style('board-modal-style', get_stylesheet_directory_uri() . '/css/board-modal.css', array(), '1.1');
+    wp_enqueue_style('board-style');
+
     wp_enqueue_script('wc-add-to-cart');
     wp_enqueue_script('wc-add-to-cart-variation');
     wp_enqueue_script('board-script');
-    wp_enqueue_style('board-style');
 
     // Enqueue our new quick view script
     wp_enqueue_script(
@@ -258,12 +186,14 @@ function lullberry_render_single_board_modal() {
 }
 
 function lullberry_display_board_animation_on_product_page() {
-    if ( ! function_exists( 'get_field' ) ) {
+    global $product; // WooCommerce single product object
+    if (!function_exists('get_field') || !is_a($product, 'WC_Product')) {
         return;
     }
 
-    $board_id = get_field( 'board_animation' );
-    if ( ! $board_id ) {
+    // Get the board animation ID from the product's custom field
+    $board_id = get_field('board_animation', $product->get_id());
+    if (!$board_id) {
         return;
     }
 
