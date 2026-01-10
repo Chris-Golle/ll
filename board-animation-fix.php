@@ -183,7 +183,7 @@ add_action('wp_ajax_nopriv_lullberry_load_product_quick_view', 'lullberry_load_p
 
 
 // 5. The Modern Iframe Modal System
-// Shortcode: [product_quick_view product_id="123" button_text="Open"]
+// Shortcode: [product_quick_view product_id="123" button_text="Quick View"]
 add_shortcode('product_quick_view', 'lullberry_product_quick_view_shortcode');
 function lullberry_product_quick_view_shortcode($atts) {
     $atts = shortcode_atts(array(
