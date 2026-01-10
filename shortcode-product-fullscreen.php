@@ -98,36 +98,32 @@ function enqueue_product_overlay_assets() {
 		)
 	);
 
-	// Manually enqueue all board animation assets.
-	// The original enqueue function has logic that prevents it from running on non-product/non-CPT pages,
-	// which would cause the animation script to be missing when the shortcode is used on other pages.
-	// By enqueueing them here directly, we guarantee they are loaded.
+	// The main `enqueue_board_animation_assets` function (in `board-animation-fix.php`)
+	// is now responsible for loading the core animation assets. We call it here
+	// to ensure the scripts and styles are available for the overlay.
+	if ( function_exists( 'enqueue_board_animation_assets' ) ) {
+		// We pass the product_id to ensure the function can find the associated board animation
+		// and correctly localize the script with message data.
+		enqueue_board_animation_assets_for_product( $product_id );
+	}
+}
 
-	// Enqueue Board CSS
-	wp_enqueue_style(
-		'board-style',
-		get_stylesheet_directory_uri() . '/css/board-animation.css',
-		array(),
-		'1.1'
-	);
+/**
+ * A wrapper for enqueue_board_animation_assets to be called from the shortcode.
+ * It temporarily sets a global variable to mimic being on a product page,
+ * so the original function's logic works without modification.
+ */
+function enqueue_board_animation_assets_for_product( $product_id ) {
+	global $post;
+	$original_post = $post;
+	$post = get_post( $product_id ); // Set global post to the product.
+	setup_postdata( $post );
 
-	// Enqueue Board JS
-	wp_enqueue_script(
-		'board-script',
-		get_stylesheet_directory_uri() . '/board-animation.js',
-		array( 'jquery' ),
-		'1.1',
-		true
-	);
+	enqueue_board_animation_assets();
 
-	// The animation script depends on this object, even if it's empty initially.
-	// The actual data will be populated by the animation script itself.
-	wp_localize_script(
-		'board-script',
-		'boardAnimationData',
-		array(
-			'messages' => array(),
-			'boardId'  => 0,
-		)
-	);
+	wp_reset_postdata();
+	$post = $original_post; // Restore global post.
+	if ( $post ) {
+		setup_postdata( $post );
+	}
 }

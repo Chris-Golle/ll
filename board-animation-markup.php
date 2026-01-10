@@ -1,4 +1,4 @@
-<div class="animation-container" id="animation-container">
+<div class="animation-container board-animation-root" id="animation-container">
     <div class="sticky-wrapper">
         <!-- Left scene -->
         <div class="scene scene-left">

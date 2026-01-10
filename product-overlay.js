@@ -43,7 +43,7 @@
 		// 1. Create Overlay Structure: Create all elements programmatically.
 		const overlay = document.createElement( 'div' );
 		overlay.id = 'product-overlay';
-		overlay.className = 'product-overlay';
+		overlay.className = 'product-overlay-scroll'; // Use the scroll class
 		overlay.setAttribute( 'role', 'dialog' );
 		overlay.setAttribute( 'aria-modal', 'true' );
 
@@ -99,18 +99,20 @@
 			.then( ( response ) => response.json() )
 			.then( ( result ) => {
 				if ( result.success ) {
-					// 6. Inject HTML.
+					// Inject the HTML from the server.
 					contentContainer.innerHTML = result.data.html;
 
-					// 7. Populate Animation Data and Initialize.
-					// This ensures the animation script has the correct text messages
-					// before it runs.
-					if ( typeof window.initBoardAnimation === 'function' ) {
-						if (window.boardAnimationData) {
-							window.boardAnimationData.messages = result.data.messages;
-						}
-						const overlay = document.getElementById('product-overlay');
-						window.initBoardAnimation(overlay);
+					// Find the root element for the animation within the new content.
+					const root = contentContainer.querySelector('.board-animation-root');
+					if (root && typeof window.initBoardAnimation === 'function') {
+						// Use a double requestAnimationFrame to ensure the DOM is painted
+						// before we initialize the animation. This is a robust way to
+						// handle initialization on dynamically loaded content.
+						requestAnimationFrame(() => {
+							requestAnimationFrame(() => {
+								window.initBoardAnimation(root);
+							});
+						});
 					}
 				} else {
 					contentContainer.innerHTML = `<p>Error: ${ result.data }</p>`;
