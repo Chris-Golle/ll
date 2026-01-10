@@ -107,12 +107,17 @@ function enqueue_single_board_animation_assets() {
         $messages = [];
     }
 
+    // Crucially, process the {{newline}} placeholders before sending to JS.
+    $processed_messages = array_map( function( $m ) {
+        return str_replace( '{{NEWLINE}}', "\n", $m );
+    }, $messages );
+
     // Localize data for the script.
     wp_localize_script(
         'board-animation-js',
         'boardAnimationData',
         array(
-            'messages' => $messages,
+            'messages' => $processed_messages,
         )
     );
 }

@@ -146,17 +146,19 @@ function lullberry_ajax_load_product_quick_view() {
     $animation_html = '';
 
     if ( $animation_id ) {
-        // Retrieve animation messages
-        $messages = [];
-        for ( $i = 1; $i <= 40; $i++ ) {
-            $message = get_post_meta( $animation_id, 'message_' . $i, true );
-            if ( $message ) {
-                $messages[] = esc_textarea( $message );
-            }
+        // Retrieve the single array of messages.
+        $messages = get_post_meta( $animation_id, '_board_messages', true );
+        if ( ! is_array( $messages ) ) {
+            $messages = [];
         }
 
+        // Crucially, process the {{newline}} placeholders before sending to JS.
+        $processed_messages = array_map( function( $m ) {
+            return str_replace( '{{NEWLINE}}', "\n", $m );
+        }, $messages );
+
         // Prepare the data object that our JS expects.
-        $animation_data = array( 'messages' => $messages );
+        $animation_data = array( 'messages' => $processed_messages );
 
         // Get the animation markup using the correct template loading function.
         ob_start();
