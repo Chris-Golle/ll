@@ -84,12 +84,12 @@ function enqueue_single_board_animation_assets() {
 
     $board_post_id = get_the_ID();
 
-    // Enqueue the consolidated stylesheet.
+    // Enqueue the animation-specific stylesheet.
     wp_enqueue_style(
-        'lullberry-quick-view-css', // Use the same handle as the quick view to avoid duplication
-        get_stylesheet_directory_uri() . '/assets/css/quick-view.css',
+        'board-animation-css',
+        get_stylesheet_directory_uri() . '/css/board-animation.css',
         array(),
-        filemtime( get_stylesheet_directory() . '/assets/css/quick-view.css' )
+        filemtime( get_stylesheet_directory() . '/css/board-animation.css' )
     );
 
     // Enqueue the original board animation JS (it's self-contained for the single page).

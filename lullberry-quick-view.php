@@ -63,6 +63,14 @@ function lullberry_quick_view_shortcode( $atts ) {
         filemtime( get_stylesheet_directory() . '/assets/css/quick-view.css' ) // Cache busting
     );
 
+    // Also enqueue the separate stylesheet for the board animation to ensure it's styled correctly inside the modal.
+    wp_enqueue_style(
+        'board-animation-css',
+        get_stylesheet_directory_uri() . '/css/board-animation.css',
+        array(),
+        filemtime( get_stylesheet_directory() . '/css/board-animation.css' ) // Cache busting
+    );
+
     // 2. Process Attributes & Generate Output
     // ---------------------------------------------------------------------------------
     // Normalize attribute keys to lowercase.
