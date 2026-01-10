@@ -73,6 +73,33 @@ function save_board_animation_meta($post_id) {
 
 
 
+function lullberry_enqueue_board_animation_assets($board_post_id) {
+    if (empty($board_post_id)) {
+        return;
+    }
+
+    wp_enqueue_style('board-style');
+    wp_enqueue_script('board-script');
+
+    $messages = get_post_meta($board_post_id, '_board_messages', true);
+    if (!is_array($messages)) {
+        $messages = [];
+    }
+
+    $messages = array_map(function ($m) {
+        return str_replace('{{NEWLINE}}', "\n", $m);
+    }, $messages);
+
+    wp_localize_script(
+        'board-script',
+        'boardAnimationData',
+        array(
+            'messages' => $messages,
+            'boardId'  => $board_post_id,
+        )
+    );
+}
+
 // AJAX handler for loading single product content
 function lullberry_load_product_quick_view() {
     check_ajax_referer('load-board-animation-nonce', 'nonce');
@@ -99,6 +126,11 @@ function lullberry_load_product_quick_view() {
     $content = ob_get_clean();
 
     wp_reset_postdata();
+
+    // After rendering the content, enqueue the necessary animation assets
+    // This is so the data is available in the AJAX response
+    $board_id = get_field('board_animation', $product_id);
+    lullberry_enqueue_board_animation_assets($board_id);
 
     wp_send_json_success($content);
 }
@@ -128,13 +160,10 @@ function lullberry_product_quick_view_shortcode($atts) {
         return '';
     }
 
-    // Enqueue all assets needed for the Quick View modal to function
+    // Enqueue assets needed for the Quick View modal itself
     wp_enqueue_style('board-modal-style', get_stylesheet_directory_uri() . '/css/board-modal.css', array(), '1.1');
-    wp_enqueue_style('board-style');
-
     wp_enqueue_script('wc-add-to-cart');
     wp_enqueue_script('wc-add-to-cart-variation');
-    wp_enqueue_script('board-script');
 
     // Enqueue our new quick view script
     wp_enqueue_script(
@@ -211,5 +240,8 @@ function lullberry_display_board_animation_on_product_page() {
 
     // Restore original post data
     wp_reset_postdata();
+
+    // Load the assets for the animation
+    lullberry_enqueue_board_animation_assets($board_id);
 }
 add_action( 'woocommerce_after_single_product_summary', 'lullberry_display_board_animation_on_product_page', 5 );

@@ -36,6 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     // wc-add-to-cart-variation.js listens for this event
                     variationsForm.dispatchEvent(new Event('wc_variation_form'));
                 }
+
+                // CRITICAL: Initialize the animation script now that the markup is in the DOM
+                if (window.initBoardAnimation) {
+                    window.initBoardAnimation();
+                }
             } else {
                 throw new Error(result.data || 'Failed to load product content.');
             }
