@@ -98,10 +98,36 @@ function enqueue_product_overlay_assets() {
 		)
 	);
 
-	// The board animation script also needs to be enqueued.
-	// It's safe to call this here, as the function in board-animation-fix.php
-	// has its own checks for whether it's a product page or CPT page.
-	if ( function_exists( 'enqueue_board_animation_assets' ) ) {
-		enqueue_board_animation_assets();
-	}
+	// Manually enqueue all board animation assets.
+	// The original enqueue function has logic that prevents it from running on non-product/non-CPT pages,
+	// which would cause the animation script to be missing when the shortcode is used on other pages.
+	// By enqueueing them here directly, we guarantee they are loaded.
+
+	// Enqueue Board CSS
+	wp_enqueue_style(
+		'board-style',
+		get_stylesheet_directory_uri() . '/css/board-animation.css',
+		array(),
+		'1.1'
+	);
+
+	// Enqueue Board JS
+	wp_enqueue_script(
+		'board-script',
+		get_stylesheet_directory_uri() . '/board-animation.js',
+		array( 'jquery' ),
+		'1.1',
+		true
+	);
+
+	// The animation script depends on this object, even if it's empty initially.
+	// The actual data will be populated by the animation script itself.
+	wp_localize_script(
+		'board-script',
+		'boardAnimationData',
+		array(
+			'messages' => array(),
+			'boardId'  => 0,
+		)
+	);
 }
