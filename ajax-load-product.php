@@ -50,33 +50,12 @@ function ajax_load_product_callback() {
 	ob_start();
 
 	// 5. Render WooCommerce Template: Use wc_get_template_part to render the product.
-	// This is the standard WooCommerce way and avoids issues with the_content().
+	// The 'woocommerce_after_single_product_summary' action hook within this template part
+	// will automatically include the board animation markup via the function in 'board-animation-fix.php'.
+	// This prevents DOM duplication.
 	wc_get_template_part( 'content', 'single-product' );
 
-	// 6. Include CPT Animation Markup:
-	// This replicates the logic from the 'woocommerce_after_single_product_summary' action
-	// to ensure the animation markup is included in our AJAX response.
-	if ( function_exists( 'get_field' ) ) {
-		$board_id = get_field( 'board_animation', $product_id );
-		if ( $board_id ) {
-			$board_post = get_post( $board_id );
-			if ( $board_post && 'board_animation' === $board_post->post_type ) {
-				// Temporarily set up postdata for the board animation CPT.
-				$temp_post = $post;
-				$post = $board_post;
-				setup_postdata( $post );
-
-				require get_stylesheet_directory() . '/board-animation-markup.php';
-
-				// Restore the original product postdata.
-				$post = $temp_post;
-				setup_postdata( $post );
-			}
-		}
-	}
-
-
-	// 7. Get Buffered Content: Get the captured HTML.
+	// 6. Get Buffered Content: Get the captured HTML.
 	$html = ob_get_clean();
 
 	// 8. Restore Original Post Data: Clean up the global state.

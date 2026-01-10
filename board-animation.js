@@ -19,7 +19,7 @@ window.initBoardAnimation = function (scrollContainer = window) {
 
     // Animation elements
     const animationContainer = document.getElementById('animation-container');
-    if (!animationContainer) return;
+    if (!animationContainer) { return; }
 
     const board = document.getElementById('board');
     const frontFace = document.getElementById('front-face');
