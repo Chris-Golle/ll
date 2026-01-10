@@ -71,68 +71,51 @@ function save_board_animation_meta($post_id) {
     }
 }
 
-// 4. Enqueue Board Animation Assets (CPT + WooCommerce products)
-add_action( 'wp_enqueue_scripts', 'enqueue_board_animation_assets' );
+// 4. Enqueue Board Animation Assets for Single CPT View
+add_action( 'wp_enqueue_scripts', 'enqueue_single_board_animation_assets' );
 
-function enqueue_board_animation_assets() {
+function enqueue_single_board_animation_assets() {
+    // This function now *only* handles the assets for the single board_animation CPT page.
+    // The quick view modal handles its own asset loading via the shortcode.
 
-    $board_post_id = null;
-
-    // Case 1: Single board_animation CPT page
-    if ( is_singular( 'board_animation' ) ) {
-        $board_post_id = get_the_ID();
+    if ( ! is_singular( 'board_animation' ) ) {
+        return; // Only run on single board animation pages.
     }
 
-    // Case 2: WooCommerce product page with linked board animation (ACF)
-    elseif ( function_exists( 'is_product' ) && is_product() && function_exists( 'get_field' ) ) {
-        $linked_board_id = get_field( 'board_animation' );
-        if ( $linked_board_id ) {
-            $board_post_id = $linked_board_id;
-        }
-    }
+    $board_post_id = get_the_ID();
 
-    // If no board animation is relevant, bail early
-    if ( ! $board_post_id ) {
-        return;
-    }
-
-    // Enqueue CSS
+    // Enqueue the consolidated stylesheet.
     wp_enqueue_style(
-        'board-style',
-        get_stylesheet_directory_uri() . '/css/board-animation.css',
+        'lullberry-quick-view-css', // Use the same handle as the quick view to avoid duplication
+        get_stylesheet_directory_uri() . '/assets/css/quick-view.css',
         array(),
-        '1.1'
+        filemtime( get_stylesheet_directory() . '/assets/css/quick-view.css' )
     );
 
-    // Enqueue JS
+    // Enqueue the original board animation JS (it's self-contained for the single page).
     wp_enqueue_script(
-        'board-script',
+        'board-animation-js',
         get_stylesheet_directory_uri() . '/board-animation.js',
         array( 'jquery' ),
-        '1.1',
+        filemtime( get_stylesheet_directory() . '/board-animation.js' ),
         true
     );
 
-    // Prepare messages for JS
-    $messages = get_post_meta( $board_post_id, '_board_messages', true );
-    if ( ! is_array( $messages ) ) {
-        $messages = [];
+    // Prepare messages for the JS.
+    $messages = [];
+    for ( $i = 1; $i <= 40; $i++ ) {
+        $message = get_post_meta( $board_post_id, 'message_' . $i, true );
+        if ( $message ) {
+            $messages[] = esc_textarea( $message );
+        }
     }
 
-    $messages = array_map(
-        function ( $m ) {
-            return str_replace( '{{NEWLINE}}', "\n", $m );
-        },
-        $messages
-    );
-
-    // Localize data for JS
+    // Localize data for the script.
     wp_localize_script(
-        'board-script',
+        'board-animation-js',
         'boardAnimationData',
         array(
             'messages' => $messages,
-            'boardId'  => $board_post_id,
         )
     );
 }
