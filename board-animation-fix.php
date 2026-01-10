@@ -202,9 +202,11 @@ function lullberry_product_quick_view_shortcode($atts) {
         return '';
     }
 
-    // Enqueue scripts needed for Add to Cart to work in the modal
+    // Enqueue scripts needed for Add to Cart AND the animation to work in the modal
     wp_enqueue_script('wc-add-to-cart');
     wp_enqueue_script('wc-add-to-cart-variation');
+    wp_enqueue_script('board-script');
+    wp_enqueue_style('board-style');
 
     // Enqueue our new quick view script
     wp_enqueue_script(
