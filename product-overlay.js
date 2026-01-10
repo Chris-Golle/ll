@@ -64,13 +64,13 @@
 		document.body.appendChild( overlay );
 		document.body.classList.add( 'product-overlay-active' ); // Prevent background scroll.
 
-		// 4. Add Event Listeners: Handle closing the overlay.
-		closeButton.addEventListener( 'click', closeOverlay );
-		overlay.addEventListener( 'click', function ( e ) {
-			if ( e.target === overlay ) {
+		// 4. Add Event Listeners using Delegation: Handle closing the overlay.
+		overlay.addEventListener('click', function(e) {
+			// Close if the close button or the overlay backdrop is clicked.
+			if (e.target.classList.contains('product-overlay-close') || e.target === overlay) {
 				closeOverlay();
 			}
-		} );
+		});
 		document.addEventListener( 'keydown', handleEscKey );
 
 
@@ -99,13 +99,16 @@
 			.then( ( response ) => response.json() )
 			.then( ( result ) => {
 				if ( result.success ) {
-					// 6. Inject HTML: Use innerHTML to inject the fetched content.
-					// This is a key part of the required architecture.
-					contentContainer.innerHTML = result.data;
+					// 6. Inject HTML.
+					contentContainer.innerHTML = result.data.html;
 
-					// 7. Initialize Animation: Call the global init function for the board animation.
-					// Pass the overlay element as the scroll container.
+					// 7. Populate Animation Data and Initialize.
+					// This ensures the animation script has the correct text messages
+					// before it runs.
 					if ( typeof window.initBoardAnimation === 'function' ) {
+						if (window.boardAnimationData) {
+							window.boardAnimationData.messages = result.data.messages;
+						}
 						const overlay = document.getElementById('product-overlay');
 						window.initBoardAnimation(overlay);
 					}

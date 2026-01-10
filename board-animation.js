@@ -511,8 +511,11 @@ window.initBoardAnimation = function (scrollContainer = window) {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize for the main page (defaulting to window)
-    if (window.self === window.top) window.initBoardAnimation();
+    // Initialize for the main page (defaulting to window) ONLY on CPT pages.
+    // This prevents the animation from auto-running on pages that just have the shortcode.
+    if (document.body.classList.contains('single-board_animation') && window.self === window.top) {
+        window.initBoardAnimation();
+    }
 });
 
 document.addEventListener('click', function (e) {

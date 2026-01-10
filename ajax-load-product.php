@@ -58,9 +58,29 @@ function ajax_load_product_callback() {
 	// 6. Get Buffered Content: Get the captured HTML.
 	$html = ob_get_clean();
 
+	// 7. Get Board Animation Messages
+	$messages = array();
+	if ( function_exists( 'get_field' ) ) {
+		$board_id = get_field( 'board_animation', $product_id );
+		if ( $board_id ) {
+			$raw_messages = get_post_meta( $board_id, '_board_messages', true );
+			if ( is_array( $raw_messages ) ) {
+				$messages = array_map(
+					function ( $m ) {
+						return str_replace( '{{NEWLINE}}', "\n", $m );
+					},
+					$raw_messages
+				);
+			}
+		}
+	}
+
 	// 8. Restore Original Post Data: Clean up the global state.
 	wp_reset_postdata();
 
-	// 9. Send Response: Send the HTML back to the frontend.
-	wp_send_json_success( $html );
+	// 9. Send Response: Send the HTML and messages back to the frontend.
+	wp_send_json_success( array(
+		'html'     => $html,
+		'messages' => $messages,
+	) );
 }
