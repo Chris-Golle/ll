@@ -121,14 +121,6 @@ function enqueue_board_animation_assets() {
         true
     );
 
-    // Enqueue Modal JS
-    wp_enqueue_script(
-        'board-modal-script',
-        get_stylesheet_directory_uri() . '/board-modal.js',
-        array(),
-        '1.0',
-        true
-    );
 
     // Prepare messages for JS
     $messages = get_post_meta( $board_post_id, '_board_messages', true );
@@ -156,49 +148,73 @@ function enqueue_board_animation_assets() {
     );
 }
 
-// AJAX handler to load board animation content
-function lullberry_load_board_animation_content() {
-    check_ajax_referer( 'load-board-animation-nonce', 'nonce' );
 
-    $post_id = isset( $_POST['post_id'] ) ? intval( $_POST['post_id'] ) : 0;
-    if ( ! $post_id || 'board_animation' !== get_post_type( $post_id ) ) {
-        wp_send_json_error( 'Invalid post ID.' );
+// AJAX handler for loading single product content
+function lullberry_load_product_quick_view() {
+    check_ajax_referer('load-board-animation-nonce', 'nonce');
+
+    $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : 0;
+    if (empty($product_id) || 'product' !== get_post_type($product_id)) {
+        wp_send_json_error('Invalid product ID.');
     }
 
-    // Setup post data
-    global $post;
-    $post = get_post( $post_id );
-    setup_postdata( $post );
+    // Set up global post data for WooCommerce templates
+    global $post, $product;
+    $post = get_post($product_id);
+    $product = wc_get_product($product_id);
 
-    // Capture the output of the template file
+    if (!$product) {
+        wp_send_json_error('Product not found.');
+    }
+
+    setup_postdata($post);
+
     ob_start();
-    require get_stylesheet_directory() . '/board-animation-markup.php';
+    // Use the standard WooCommerce template for single product content
+    wc_get_template_part('content', 'single-product');
     $content = ob_get_clean();
 
-    // Reset post data
     wp_reset_postdata();
 
-    wp_send_json_success( $content );
+    wp_send_json_success($content);
 }
-add_action( 'wp_ajax_load_board_animation', 'lullberry_load_board_animation_content' );
-add_action( 'wp_ajax_nopriv_load_board_animation', 'lullberry_load_board_animation_content' );
+add_action('wp_ajax_lullberry_load_product_quick_view', 'lullberry_load_product_quick_view');
+add_action('wp_ajax_nopriv_lullberry_load_product_quick_view', 'lullberry_load_product_quick_view');
 
 
 // 5. The Modern Iframe Modal System
-// Shortcode: [board_modal post_id="123" button_text="Open"]
-add_shortcode('board_modal', 'render_board_modal_button');
-function render_board_modal_button($atts) {
-    $atts = shortcode_atts(array('post_id' => 0, 'button_text' => 'Open'), $atts);
-    if (!$atts['post_id']) {
+// Shortcode: [product_quick_view product_id="123" button_text="Open"]
+add_shortcode('product_quick_view', 'lullberry_product_quick_view_shortcode');
+function lullberry_product_quick_view_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'product_id'  => 0,
+        'button_text' => 'Quick View',
+    ), $atts, 'product_quick_view');
+
+    $product_id = absint($atts['product_id']);
+    if (empty($product_id) || 'product' !== get_post_type($product_id)) {
         return '';
     }
 
-    // This ensures the single modal is added to the footer only once
+    // Enqueue scripts needed for Add to Cart to work in the modal
+    wp_enqueue_script('wc-add-to-cart');
+    wp_enqueue_script('wc-add-to-cart-variation');
+
+    // Enqueue our new quick view script
+    wp_enqueue_script(
+        'product-quick-view-script',
+        get_stylesheet_directory_uri() . '/product-quick-view.js',
+        array('wc-add-to-cart-variation'), // Dependency
+        '1.0',
+        true
+    );
+
+    // Ensure the single reusable modal is added to the footer
     add_action('wp_footer', 'lullberry_render_single_board_modal', 1);
 
     return sprintf(
-        '<button class="board-modal-trigger" data-post-id="%d">%s</button>',
-        absint($atts['post_id']),
+        '<button class="product-quick-view-trigger" data-product-id="%d">%s</button>',
+        $product_id,
         esc_html($atts['button_text'])
     );
 }
