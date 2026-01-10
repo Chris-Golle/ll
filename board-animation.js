@@ -1,4 +1,9 @@
+console.log("board-animation.js loaded");
+
 window.initBoardAnimation = function () {
+    console.log("initBoardAnimation called");
+    console.log("boardAnimationData:", window.boardAnimationData);
+
     if (window.__boardAnimationRunning) return;
     window.__boardAnimationRunning = true;
 
