@@ -222,19 +222,23 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // Listen for messages from the iframe (for cart updates)
-    $(window).on('message', function (event) {
-        if (event.originalEvent.origin !== window.location.origin) {
-             return;
-        }
+    window.addEventListener('message', function(event) {
+        // 1. Security check: Only accept messages from our own origin
+        if (event.origin !== window.location.origin) return;
 
-        var data = event.originalEvent.data;
+        // 2. Check for the specific action Jules just added
+        if (event.data && event.data.action === 'woocommerce_added_to_cart') {
+            const fragments = event.data.fragments;
 
-        if (data && data.action === 'woocommerce_added_to_cart' && data.fragments) {
-            $.each(data.fragments, function (key, value) {
-                $(key).replaceWith(value);
-            });
-            $(document.body).trigger('wc_fragments_refreshed');
+            if (fragments) {
+                // 3. Update the HTML of the parent page with the new fragments
+                jQuery.each(fragments, function(selector, html) {
+                    jQuery(selector).replaceWith(html);
+                });
+
+                // 4. Critical: Tell the parent page scripts that fragments were updated
+                jQuery(document.body).trigger('wc_fragments_refreshed');
+            }
         }
     });
 });
