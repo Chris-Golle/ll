@@ -1,6 +1,7 @@
 jQuery(document).ready(function($) {
     // START Sandbox Overlay Logic
-    $(document).on('click', '.product-fullscreen-button', function() {
+    $(document).on('click', '.view-fullscreen-btn', function(e) {
+        e.preventDefault();
         var button = $(this);
         var permalink = button.data('permalink');
 

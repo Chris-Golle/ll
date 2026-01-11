@@ -137,15 +137,25 @@ function enqueue_board_animation_assets() {
     );
 }
 
-// 5. Automate Fullscreen Button Placement
-add_action('woocommerce_after_add_to_cart_button', 'lullberry_add_fullscreen_button');
-function lullberry_add_fullscreen_button() {
-    if (function_exists('get_field')) {
-        $linked_board_id = get_field('board_animation');
+// 5. Refactored Content Injection Logic
+add_action('woocommerce_after_single_product', 'lullberry_product_page_content_injection');
+function lullberry_product_page_content_injection() {
+    if (!function_exists('get_field') || !get_field('board_animation')) {
+        return;
+    }
 
-        if ($linked_board_id) {
-            echo do_shortcode('[product_fullscreen product_id="' . get_the_ID() . '"]');
-        }
+    if (isset($_GET['overlay_mode'])) {
+        // Inside the iframe: render the animation markup
+        global $post;
+        $original_post = $post;
+        $post = get_post(get_field('board_animation'));
+        setup_postdata($post);
+        require get_stylesheet_directory() . '/board-animation-markup.php';
+        wp_reset_postdata();
+        $post = $original_post;
+    } else {
+        // On the main product page: render the fullscreen button
+        echo do_shortcode('[product_fullscreen product_id="' . get_the_ID() . '"]');
     }
 }
 

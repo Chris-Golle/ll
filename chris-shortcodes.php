@@ -278,6 +278,6 @@ function lullberry_product_fullscreen_shortcode($atts) {
 
     $permalink = get_permalink($atts['product_id']);
 
-    return '<button class="product-fullscreen-button" data-product-id="' . esc_attr($atts['product_id']) . '" data-permalink="' . esc_url($permalink) . '">' . esc_html($atts['button_text']) . '</button>';
+    return '<button class="view-fullscreen-btn" data-product-id="' . esc_attr($atts['product_id']) . '" data-permalink="' . esc_url($permalink) . '">' . esc_html($atts['button_text']) . '</button>';
 }
 // END Sandbox Overlay Shortcode
