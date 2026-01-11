@@ -217,14 +217,31 @@ jQuery(document).ready(function ($) {
 
         // Handle close button
         $closeButton.on('click', function () {
-            $overlay.remove();
-            $('html, body').css('overflow', '');
+            const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
 
-            if (sessionStorage.getItem('cart_updated_in_overlay') === 'true') {
-                sessionStorage.removeItem('cart_updated_in_overlay');
-                window.location.reload(); // The "Single Source of Truth" fix
+            // If updated, reload. If not, just close.
+            if (wasUpdated === 'true') {
+                window.sessionStorage.removeItem('cart_updated_in_overlay');
+                window.location.reload();
+            } else {
+                // Standard close logic (hide div/remove iframe)
+                $overlay.remove();
+                $('html, body').css('overflow', '');
             }
         });
     });
 
+    $(document).keyup(function(e) {
+        if (e.key === "Escape") {
+            const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
+            if (wasUpdated === 'true') {
+                window.sessionStorage.removeItem('cart_updated_in_overlay');
+                window.location.reload();
+            } else {
+                // Also close the overlay on escape if it exists
+                $('.product-overlay-container').remove();
+                $('html, body').css('overflow', '');
+            }
+        }
+    });
 });

@@ -1,5 +1,5 @@
 jQuery(document).ready(function ($) {
     $(document.body).on('added_to_cart', function() {
-        sessionStorage.setItem('cart_updated_in_overlay', 'true');
+        window.top.sessionStorage.setItem('cart_updated_in_overlay', 'true');
     });
 });
