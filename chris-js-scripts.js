@@ -219,31 +219,14 @@ jQuery(document).ready(function ($) {
         $closeButton.on('click', function () {
             $overlay.remove();
             $('html, body').css('overflow', '');
+            jQuery(document.body).trigger('wc_fragment_refresh');
         });
     });
 
     window.addEventListener('message', function(event) {
-        // 1. Security check: Only accept messages from our own origin
         if (event.origin !== window.location.origin) return;
-
-        // 2. Check for the specific action
-        if (event.data && event.data.action === 'woocommerce_added_to_cart') {
-            const fragments = event.data.fragments;
-            const cart_hash = event.data.cart_hash;
-
-            if (fragments && cart_hash) {
-                // 3. Update the HTML of the parent page with the new fragments
-                jQuery.each(fragments, function(selector, html) {
-                    jQuery(selector).replaceWith(html);
-                });
-
-                // 4. Update sessionStorage to sync state
-                sessionStorage.setItem('wc_fragments', JSON.stringify(fragments));
-                sessionStorage.setItem('wc_cart_hash', cart_hash);
-
-                // 5. Tell the parent page scripts that fragments were loaded
-                jQuery(document.body).trigger('wc_fragments_loaded');
-            }
+        if (event.data && event.data.action === 'wc_force_refresh') {
+            jQuery(document.body).trigger('wc_fragment_refresh');
         }
     });
 });
