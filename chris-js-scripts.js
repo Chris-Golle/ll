@@ -228,11 +228,13 @@ jQuery(document).ready(function ($) {
 
     window.addEventListener('message', function(event) {
         if (event.origin !== window.location.origin) return;
+
         if (event.data && event.data.action === 'wc_force_refresh') {
-            // Clear WC fragment cache to force a fresh server request
-            if(window.sessionStorage) {
+            // Clear the cache so WC doesn't remember the 'empty' state
+            if (window.sessionStorage) {
                 sessionStorage.removeItem('wc_fragments');
             }
+            // Trigger the now-available script
             jQuery(document.body).trigger('wc_fragment_refresh');
         }
     });
