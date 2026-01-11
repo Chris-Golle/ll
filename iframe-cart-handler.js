@@ -3,7 +3,8 @@ jQuery(document).ready(function ($) {
         if (window.parent) {
             window.parent.postMessage({
                 action: 'woocommerce_added_to_cart',
-                fragments: fragments
+                fragments: fragments,
+                cart_hash: cart_hash
             }, window.location.origin);
         }
     });
