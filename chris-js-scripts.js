@@ -219,45 +219,12 @@ jQuery(document).ready(function ($) {
         $closeButton.on('click', function () {
             $overlay.remove();
             $('html, body').css('overflow', '');
-            jQuery(document.body).trigger('wc_fragment_refresh');
+
+            if (sessionStorage.getItem('cart_updated_in_overlay') === 'true') {
+                sessionStorage.removeItem('cart_updated_in_overlay');
+                window.location.reload(); // The "Single Source of Truth" fix
+            }
         });
     });
 
-    window.addEventListener('message', function(event) {
-        if (event.origin !== window.location.origin) return;
-
-        if (event.data && event.data.action === 'wc_force_refresh') {
-            // 1. Force Clear the Storage
-            if (window.sessionStorage) {
-                sessionStorage.clear(); // Clear all to be safe
-            }
-
-            // 2. Trigger the standard refresh
-            jQuery(document.body).trigger('wc_fragment_refresh');
-
-            // 3. THE FALLBACK: If the above doesn't trigger the AJAX, call it manually
-            if (typeof wc_cart_fragments_params !== 'undefined') {
-                jQuery.ajax({
-                    url: wc_cart_fragments_params.wc_ajax_url.toString().replace('%%endpoint%%', 'get_refreshed_fragments'),
-                    type: 'POST',
-                    data: {
-                        time: new Date().getTime()
-                    },
-                    timeout: wc_cart_fragments_params.request_timeout,
-                    success: function(data) {
-                        if (data && data.fragments) {
-                            jQuery.each(data.fragments, function(key, value) {
-                                jQuery(key).replaceWith(value);
-                            });
-                            jQuery(document.body).trigger('wc_fragments_refreshed');
-                            console.log('Parent: Hard AJAX Sync Complete.');
-                        }
-                    },
-                    error: function() {
-                        console.log('Parent: AJAX Sync Failed.');
-                    }
-                });
-            }
-        }
-    });
 });
