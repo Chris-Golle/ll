@@ -185,12 +185,11 @@ function wordflick(strings) {
 };
 
 jQuery(document).ready(function ($) {
-    let cartWasUpdated = false;
-
-    window.addEventListener('message', function(event) {
+    window.addEventListener('message', function (event) {
         if (event.origin !== window.location.origin) return;
-        if (event.data && event.data.action === 'cart_updated') {
-            cartWasUpdated = true;
+
+        if (event.data?.action === 'cart_updated') {
+            sessionStorage.setItem('cart_updated_in_overlay', '1');
         }
     });
 
@@ -227,25 +226,21 @@ jQuery(document).ready(function ($) {
         // Handle close button is now a delegated event handler below
     });
 
-    // Delegated handler for the close button, now in the correct parent context
-    $(document.body).on('click', '.product-overlay-close', function() {
-        if (cartWasUpdated) {
-            window.location.reload();
+    function closeOverlay() {
+        if (sessionStorage.getItem('cart_updated_in_overlay')) {
+            sessionStorage.removeItem('cart_updated_in_overlay');
+            window.location.reload(); // required for block themes
         } else {
-            $('.product-overlay-container').remove();
-            $('html, body').css('overflow', '');
+            jQuery('.product-overlay-container').remove();
+            jQuery('html, body').css('overflow', '');
         }
-    });
+    }
 
-    // Escape key handler, now in the correct parent context
-    $(document).keyup(function(e) {
-        if (e.key === "Escape") {
-            if (cartWasUpdated) {
-                window.location.reload();
-            } else {
-                $('.product-overlay-container').remove();
-                $('html, body').css('overflow', '');
-            }
-        }
+    // Delegated close button
+    jQuery(document.body).on('click', '.product-overlay-close', closeOverlay);
+
+    // Escape key
+    jQuery(document).on('keyup', function (e) {
+        if (e.key === 'Escape') closeOverlay();
     });
 });
