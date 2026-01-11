@@ -219,10 +219,15 @@ jQuery(document).ready(function ($) {
         $closeButton.on('click', function () {
             $overlay.remove();
             $('html, body').css('overflow', '');
-            if(window.sessionStorage) {
-                sessionStorage.removeItem('wc_fragments');
+            if (window.sessionStorage) {
+                Object.keys(sessionStorage).forEach(key => {
+                    if (key.includes('wc_fragments') || key.includes('wc_cart_hash')) {
+                        sessionStorage.removeItem(key);
+                    }
+                });
             }
             jQuery(document.body).trigger('wc_fragment_refresh');
+            jQuery(document.body).trigger('wc_fragments_load');
         });
     });
 
@@ -230,12 +235,20 @@ jQuery(document).ready(function ($) {
         if (event.origin !== window.location.origin) return;
 
         if (event.data && event.data.action === 'wc_force_refresh') {
-            // Clear the cache so WC doesn't remember the 'empty' state
             if (window.sessionStorage) {
-                sessionStorage.removeItem('wc_fragments');
+                // 1. Find and remove all WC-related session items
+                Object.keys(sessionStorage).forEach(key => {
+                    if (key.includes('wc_fragments') || key.includes('wc_cart_hash')) {
+                        sessionStorage.removeItem(key);
+                    }
+                });
             }
-            // Trigger the now-available script
+
+            // 2. Force the native WC refresh
             jQuery(document.body).trigger('wc_fragment_refresh');
+
+            // 3. Fallback: If the icon still doesn't change, trigger the specific fragment load
+            jQuery(document.body).trigger('wc_fragments_load');
         }
     });
 });
