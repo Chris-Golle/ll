@@ -10,6 +10,12 @@ function twentytwentyfive_child_enqueue_styles() {
 }
 add_action( 'wp_enqueue_scripts', 'twentytwentyfive_child_enqueue_styles' );
 
+add_action( 'wp_enqueue_scripts', function() {
+    if ( function_exists( 'is_woocommerce' ) ) {
+        wp_enqueue_script( 'wc-cart-fragments' );
+    }
+});
+
 /* enqueue child theme last to avoid the need for !important overrides */
 
 

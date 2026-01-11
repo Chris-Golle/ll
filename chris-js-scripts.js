@@ -219,6 +219,9 @@ jQuery(document).ready(function ($) {
         $closeButton.on('click', function () {
             $overlay.remove();
             $('html, body').css('overflow', '');
+            if(window.sessionStorage) {
+                sessionStorage.removeItem('wc_fragments');
+            }
             jQuery(document.body).trigger('wc_fragment_refresh');
         });
     });
@@ -226,6 +229,10 @@ jQuery(document).ready(function ($) {
     window.addEventListener('message', function(event) {
         if (event.origin !== window.location.origin) return;
         if (event.data && event.data.action === 'wc_force_refresh') {
+            // Clear WC fragment cache to force a fresh server request
+            if(window.sessionStorage) {
+                sessionStorage.removeItem('wc_fragments');
+            }
             jQuery(document.body).trigger('wc_fragment_refresh');
         }
     });
