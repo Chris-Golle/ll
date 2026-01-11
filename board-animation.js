@@ -165,18 +165,39 @@ window.initBoardAnimation = function () {
         // This prevents floating point drift in all browsers.
         const visualRotation = currentRotation % 360;
 
-        if (animationContainer) {
-            animationContainer.style.setProperty('--board-rotation', `${visualRotation}deg`);
+        if (board) {
+            // translate3d(0,0,0) ensures hardware acceleration
+            // rotateX applies the rotation
+            // The transform-origin set above (50% 50% 0px) ensures the axis is stable
+            board.style.transform = `translate3d(0,0,0) rotateX(${visualRotation}deg)`;
+        }
+        if (rightBoard) {
+            rightBoard.style.transform = `translate3d(0,0,0) rotateX(${visualRotation}deg)`;
         }
 
         // Trapezoid calculation (uses full rotation progress)
         const trapezoidProgress = Math.min(currentRotation / maxRotation, 1);
         const trapezoidHeight = 333 - (trapezoidProgress * 222);
         const trapezoidTopWidth = 111 + (trapezoidProgress * 88);
+        const trapezoidBottomWidth = 222;
+        const trapezoidTopOffset = (trapezoidBottomWidth - trapezoidTopWidth) / 2;
 
-        if (animationContainer) {
-            animationContainer.style.setProperty('--trapezoid-height', `${trapezoidHeight}px`);
-            animationContainer.style.setProperty('--trapezoid-top-width', `${trapezoidTopWidth}px`);
+        const leftTrapezoidSvg = document.getElementById('trapezoid-svg');
+        const leftTrapezoidPolygon = document.getElementById('trapezoid-polygon');
+        if (leftTrapezoidSvg && leftTrapezoidPolygon) {
+            leftTrapezoidSvg.setAttribute('height', trapezoidHeight);
+            leftTrapezoidSvg.setAttribute('viewBox', `0 0 ${trapezoidBottomWidth} ${trapezoidHeight}`);
+            const leftPoints = `${trapezoidTopOffset},0 ${trapezoidTopOffset + trapezoidTopWidth},0 ${trapezoidBottomWidth},${trapezoidHeight} 0,${trapezoidHeight}`;
+            leftTrapezoidPolygon.setAttribute('points', leftPoints);
+        }
+
+        const rightTrapezoidSvg = document.getElementById('right-trapezoid-svg');
+        const rightTrapezoidPolygon = document.getElementById('right-trapezoid-polygon');
+        if (rightTrapezoidSvg && rightTrapezoidPolygon) {
+            rightTrapezoidSvg.setAttribute('height', trapezoidHeight);
+            rightTrapezoidSvg.setAttribute('viewBox', `0 0 ${trapezoidBottomWidth} ${trapezoidHeight}`);
+            const rightPoints = `${trapezoidTopOffset + trapezoidTopWidth},0 ${trapezoidTopOffset},0 0,${trapezoidHeight} ${trapezoidBottomWidth},${trapezoidHeight}`;
+            rightTrapezoidPolygon.setAttribute('points', rightPoints);
         }
 
         // Logic continues using original currentRotation
@@ -476,18 +497,9 @@ window.initBoardAnimation = function () {
     });
 };
 
-function tryInitAnimation() {
-    if (document.readyState === 'complete' && document.getElementById('animation-container')) {
-        if (window.self !== window.top) { // Only run in iframe
-            window.initBoardAnimation();
-        }
-    } else {
-        // If the DOM is not ready, wait for it to load
-        document.addEventListener('DOMContentLoaded', tryInitAnimation);
-    }
-}
-
-tryInitAnimation();
+document.addEventListener("DOMContentLoaded", function() {
+    window.initBoardAnimation();
+});
 
 document.addEventListener('click', function (e) {
   const btn = e.target.closest('.board-modal-trigger');
