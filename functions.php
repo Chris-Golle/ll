@@ -1,5 +1,35 @@
 <?php
 
+// START Sandbox Overlay
+add_action('send_headers', 'lullberry_send_headers');
+function lullberry_send_headers() {
+    header('X-Frame-Options: SAMEORIGIN');
+}
+
+add_filter('template_include', 'lullberry_template_include');
+function lullberry_template_include($template) {
+    if (isset($_GET['overlay_mode'])) {
+        $new_template = locate_template(array('single-product-overlay.php'));
+        if ('' != $new_template) {
+            return $new_template;
+        }
+    }
+    return $template;
+}
+add_action('wp_enqueue_scripts', 'lullberry_overlay_scripts');
+function lullberry_overlay_scripts() {
+    if (isset($_GET['overlay_mode'])) {
+        wp_enqueue_script(
+            'iframe-cart-bridge',
+            get_stylesheet_directory_uri() . '/iframe-cart-bridge.js',
+            array('jquery'),
+            '1.0.0',
+            true
+        );
+    }
+}
+// END Sandbox Overlay
+
 function twentytwentyfive_child_enqueue_styles() {
     wp_enqueue_style(
         'twentytwentyfive-child',
@@ -363,6 +393,19 @@ function add_my_scripts()
         'chris-js-script', // 	name your script so that you can attach other scripts and de-register, etc.
         get_stylesheet_directory_uri() . '/chris-js-scripts.js', // 	this is the location of your script file
         array('jquery') // 	this array lists the scripts upon which your script depends
+    );
+
+    // Enqueue Sandbox Overlay scripts and styles
+    wp_enqueue_script(
+        'sandbox-overlay',
+        get_stylesheet_directory_uri() . '/sandbox-overlay.js',
+        array('jquery'),
+        '1.0.0',
+        true
+    );
+    wp_enqueue_style(
+        'sandbox-overlay-style',
+        get_stylesheet_directory_uri() . '/css/sandbox-overlay.css'
     );
 }
 
