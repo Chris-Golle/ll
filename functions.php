@@ -821,14 +821,14 @@ function lullberry_enqueue_overlay_scripts() {
             'board-style',
             get_stylesheet_directory_uri() . '/css/board-animation.css',
             array(),
-            '1.1'
+            filemtime(get_stylesheet_directory() . '/css/board-animation.css')
         );
 
         wp_enqueue_script(
             'board-script',
             get_stylesheet_directory_uri() . '/board-animation.js',
             array( 'jquery' ),
-            '1.1',
+            filemtime(get_stylesheet_directory() . '/board-animation.js'),
             true
         );
     }

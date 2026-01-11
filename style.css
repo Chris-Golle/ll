@@ -54,4 +54,30 @@ Text Domain: twentytwentyfive-child
     transform: translateX(-50%);
     position: relative;
     box-sizing: border-box;
+    --board-rotation: 0deg;
+    --trapezoid-height: 333px;
+    --trapezoid-top-width: 111px;
+    --trapezoid-bottom-width: 222px;
+}
+
+.body-overlay-active, .body-overlay-active body {
+    overflow-y: auto !important;
+    height: 100%;
+}
+
+.board {
+    transform: translate3d(0,0,0) rotateX(var(--board-rotation));
+}
+
+.trapezoid {
+    height: var(--trapezoid-height);
+    width: var(--trapezoid-bottom-width);
+    background-color: #f5f5dc;
+    border: 2px solid #d2b48c;
+    clip-path: polygon(
+        calc( (var(--trapezoid-bottom-width) - var(--trapezoid-top-width)) / 2 ) 0%,
+        calc( (var(--trapezoid-bottom-width) + var(--trapezoid-top-width)) / 2 ) 0%,
+        100% 100%,
+        0% 100%
+    );
 }
