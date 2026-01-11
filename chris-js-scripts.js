@@ -185,6 +185,15 @@ function wordflick(strings) {
 };
 
 jQuery(document).ready(function ($) {
+    let cartWasUpdated = false;
+
+    window.addEventListener('message', function(event) {
+        if (event.origin !== window.location.origin) return;
+        if (event.data && event.data.action === 'cart_updated') {
+            cartWasUpdated = true;
+        }
+    });
+
     // Product Fullscreen Overlay
     $(document.body).on('click', '.product-fullscreen-button', function (e) {
         e.preventDefault();
@@ -220,13 +229,23 @@ jQuery(document).ready(function ($) {
 
     // Delegated handler for the close button, now in the correct parent context
     $(document.body).on('click', '.product-overlay-close', function() {
-        window.location.reload();
+        if (cartWasUpdated) {
+            window.location.reload();
+        } else {
+            $('.product-overlay-container').remove();
+            $('html, body').css('overflow', '');
+        }
     });
 
     // Escape key handler, now in the correct parent context
     $(document).keyup(function(e) {
         if (e.key === "Escape") {
-            window.location.reload();
+            if (cartWasUpdated) {
+                window.location.reload();
+            } else {
+                $('.product-overlay-container').remove();
+                $('html, body').css('overflow', '');
+            }
         }
     });
 });
