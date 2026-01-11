@@ -104,29 +104,12 @@ function enqueue_board_animation_assets() {
         '1.1'
     );
 
-    // Enqueue Modal CSS
-    wp_enqueue_style(
-        'board-modal-style',
-        get_stylesheet_directory_uri() . '/css/board-modal.css',
-        array(),
-        '1.0'
-    );
-
     // Enqueue JS
     wp_enqueue_script(
         'board-script',
         get_stylesheet_directory_uri() . '/board-animation.js',
         array( 'jquery' ),
         '1.1',
-        true
-    );
-
-    // Enqueue Modal JS
-    wp_enqueue_script(
-        'board-modal-script',
-        get_stylesheet_directory_uri() . '/board-modal.js',
-        array(),
-        '1.0',
         true
     );
 
@@ -155,63 +138,3 @@ function enqueue_board_animation_assets() {
 }
 
 
-// 5. The Modern Iframe Modal System
-// Shortcode: [board_modal post_id="123" button_text="Open"]
-add_shortcode('board_modal', 'render_board_modal_button');
-function render_board_modal_button($atts) {
-    $atts = shortcode_atts(array('post_id' => 0, 'button_text' => 'Open'), $atts);
-    if (!$atts['post_id']) return '';
-
-    $url = get_permalink($atts['post_id']);
-    
-    // Queue modal for footer
-    global $board_modals;
-    $board_modals[$atts['post_id']] = $url;
-
-    return sprintf(
-        '<button class="board-modal-trigger" data-modal-id="%d">%s</button>',
-        $atts['post_id'], esc_html($atts['button_text'])
-    );
-}
-
-// Render Modals and Script in Footer
-function lullberry_render_board_modals_in_footer() {
-    global $board_modals;
-    if (empty($board_modals)) return;
-
-    // Output Dialogs
-    foreach ($board_modals as $id => $url) : ?>
-        <dialog id="board-modal-<?php echo intval($id); ?>" class="board-modal">
-            <button class="board-modal-close" aria-label="Close">×</button>
-            <iframe src="<?php echo esc_url($url); ?>"></iframe>
-        </dialog>
-    <?php endforeach;
-}
-add_action('wp_footer', 'lullberry_render_board_modals_in_footer');
-
-function lullberry_display_board_animation_on_product_page() {
-    if ( ! function_exists( 'get_field' ) ) {
-        return;
-    }
-
-    $board_id = get_field( 'board_animation' );
-    if ( ! $board_id ) {
-        return;
-    }
-
-    $board_post = get_post( $board_id );
-    if ( ! $board_post || 'board_animation' !== $board_post->post_type ) {
-        return;
-    }
-
-    // Setup post data for the board animation
-    global $post;
-    $post = $board_post;
-    setup_postdata( $post );
-
-    require get_stylesheet_directory() . '/board-animation-markup.php';
-
-    // Restore original post data
-    wp_reset_postdata();
-}
-add_action( 'woocommerce_after_single_product_summary', 'lullberry_display_board_animation_on_product_page', 5 );
