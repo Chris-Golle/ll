@@ -215,20 +215,20 @@ jQuery(document).ready(function ($) {
             $iframe.css('opacity', '1');
         });
 
-        // Handle close button
-        $closeButton.on('click', function () {
-            const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
+        // Handle close button is now a delegated event handler below
+    });
 
-            // If updated, reload. If not, just close.
-            if (wasUpdated === 'true') {
-                window.sessionStorage.removeItem('cart_updated_in_overlay');
-                window.location.reload();
-            } else {
-                // Standard close logic (hide div/remove iframe)
-                $overlay.remove();
-                $('html, body').css('overflow', '');
-            }
-        });
+    // Delegated handler for the close button
+    $(document.body).on('click', '.product-overlay-close', function() {
+        const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
+
+        if (wasUpdated === 'true') {
+            window.sessionStorage.removeItem('cart_updated_in_overlay');
+            window.location.reload();
+        } else {
+            $('.product-overlay-container').remove();
+            $('html, body').css('overflow', '');
+        }
     });
 
     $(document).keyup(function(e) {
