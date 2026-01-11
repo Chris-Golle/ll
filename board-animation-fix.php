@@ -83,10 +83,10 @@ function enqueue_board_animation_assets() {
         $board_post_id = get_the_ID();
     }
 
-    // Case 2: WooCommerce product page with linked board animation (ACF)
-    elseif ( function_exists( 'is_product' ) && is_product() && function_exists( 'get_field' ) ) {
-        $linked_board_id = get_field( 'board_animation' );
-        if ( $linked_board_id ) {
+    // Case 2: Iframe overlay mode
+    elseif (isset($_GET['overlay_mode']) && is_product()) {
+        $linked_board_id = get_field('board_animation', get_the_ID());
+        if ($linked_board_id) {
             $board_post_id = $linked_board_id;
         }
     }

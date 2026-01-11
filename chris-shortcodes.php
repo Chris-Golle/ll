@@ -258,3 +258,26 @@ if (!function_exists('write_to_console')) {
         $output = implode(',', $output);
     echo "<script>console.log('Lullberry: " . $output . "' );</script>";
 }}
+
+// START Sandbox Overlay Shortcode
+add_shortcode('product_fullscreen', 'lullberry_product_fullscreen_shortcode');
+function lullberry_product_fullscreen_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'product_id' => null,
+        'button_text' => 'View Fullscreen',
+    ), $atts, 'product_fullscreen');
+
+    if (!$atts['product_id']) {
+        return '<p>Error: No product ID provided.</p>';
+    }
+
+    $product = wc_get_product($atts['product_id']);
+    if (!$product) {
+        return '<p>Error: Invalid product ID.</p>';
+    }
+
+    $permalink = get_permalink($atts['product_id']);
+
+    return '<button class="product-fullscreen-button" data-product-id="' . esc_attr($atts['product_id']) . '" data-permalink="' . esc_url($permalink) . '">' . esc_html($atts['button_text']) . '</button>';
+}
+// END Sandbox Overlay Shortcode
