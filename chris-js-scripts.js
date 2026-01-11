@@ -226,18 +226,23 @@ jQuery(document).ready(function ($) {
         // 1. Security check: Only accept messages from our own origin
         if (event.origin !== window.location.origin) return;
 
-        // 2. Check for the specific action Jules just added
+        // 2. Check for the specific action
         if (event.data && event.data.action === 'woocommerce_added_to_cart') {
             const fragments = event.data.fragments;
+            const cart_hash = event.data.cart_hash;
 
-            if (fragments) {
+            if (fragments && cart_hash) {
                 // 3. Update the HTML of the parent page with the new fragments
                 jQuery.each(fragments, function(selector, html) {
                     jQuery(selector).replaceWith(html);
                 });
 
-                // 4. Critical: Tell the parent page scripts that fragments were updated
-                jQuery(document.body).trigger('wc_fragments_refreshed');
+                // 4. Update sessionStorage to sync state
+                sessionStorage.setItem('wc_fragments', JSON.stringify(fragments));
+                sessionStorage.setItem('wc_cart_hash', cart_hash);
+
+                // 5. Tell the parent page scripts that fragments were loaded
+                jQuery(document.body).trigger('wc_fragments_loaded');
             }
         }
     });
