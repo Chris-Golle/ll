@@ -222,25 +222,26 @@ jQuery(document).ready(function ($) {
             $spinner.hide();
             $iframe.css('opacity', '1');
         });
-
-        // Handle close button is now a delegated event handler below
     });
 
     function closeOverlay() {
-        if (sessionStorage.getItem('cart_updated_in_overlay')) {
+        const updated = sessionStorage.getItem('cart_updated_in_overlay');
+
+        if (updated === '1') {
             sessionStorage.removeItem('cart_updated_in_overlay');
-            window.location.reload(); // required for block themes
-        } else {
-            jQuery('.product-overlay-container').remove();
-            jQuery('html, body').css('overflow', '');
+            window.location.reload(); // REQUIRED for block themes
+            return;
         }
+
+        $('.product-overlay-container').remove();
+        $('html, body').css('overflow', '');
     }
 
     // Delegated close button
-    jQuery(document.body).on('click', '.product-overlay-close', closeOverlay);
+    $(document.body).on('click', '.product-overlay-close', closeOverlay);
 
     // Escape key
-    jQuery(document).on('keyup', function (e) {
+    $(document).on('keyup', function (e) {
         if (e.key === 'Escape') closeOverlay();
     });
 });
