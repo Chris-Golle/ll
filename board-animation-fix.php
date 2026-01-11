@@ -83,10 +83,10 @@ function enqueue_board_animation_assets() {
         $board_post_id = get_the_ID();
     }
 
-    // Case 2: WooCommerce product page with linked board animation (ACF)
-    elseif ( function_exists( 'is_product' ) && is_product() && function_exists( 'get_field' ) ) {
-        $linked_board_id = get_field( 'board_animation' );
-        if ( $linked_board_id ) {
+    // Case 2: Iframe overlay mode
+    elseif (isset($_GET['overlay_mode']) && is_product()) {
+        $linked_board_id = get_field('board_animation', get_the_ID());
+        if ($linked_board_id) {
             $board_post_id = $linked_board_id;
         }
     }
@@ -137,4 +137,15 @@ function enqueue_board_animation_assets() {
     );
 }
 
+// 5. Automate Fullscreen Button Placement
+add_action('woocommerce_after_add_to_cart_button', 'lullberry_add_fullscreen_button');
+function lullberry_add_fullscreen_button() {
+    if (function_exists('get_field')) {
+        $linked_board_id = get_field('board_animation');
+
+        if ($linked_board_id) {
+            echo do_shortcode('[product_fullscreen product_id="' . get_the_ID() . '"]');
+        }
+    }
+}
 

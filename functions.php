@@ -395,18 +395,20 @@ function add_my_scripts()
         array('jquery') // 	this array lists the scripts upon which your script depends
     );
 
-    // Enqueue Sandbox Overlay scripts and styles
-    wp_enqueue_script(
-        'sandbox-overlay',
-        get_stylesheet_directory_uri() . '/sandbox-overlay.js',
-        array('jquery'),
-        '1.0.0',
-        true
-    );
-    wp_enqueue_style(
-        'sandbox-overlay-style',
-        get_stylesheet_directory_uri() . '/css/sandbox-overlay.css'
-    );
+    // Enqueue Sandbox Overlay scripts and styles only on product pages
+    if (function_exists('is_product') && is_product()) {
+        wp_enqueue_script(
+            'sandbox-overlay',
+            get_stylesheet_directory_uri() . '/sandbox-overlay.js',
+            array('jquery'),
+            '1.0.0',
+            true
+        );
+        wp_enqueue_style(
+            'sandbox-overlay-style',
+            get_stylesheet_directory_uri() . '/css/sandbox-overlay.css'
+        );
+    }
 }
 
 /*** @snippet       Disable WooCommerce Ajax Cart Fragments Everywhere */
