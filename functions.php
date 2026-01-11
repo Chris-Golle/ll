@@ -803,6 +803,66 @@ function tinymce_fix($init)
 }
 add_filter('tiny_mce_before_init', 'tinymce_fix');
 // END Stop removing span tags from WordPress
+// Enqueue scripts for the product overlay iframe
+add_action('wp_enqueue_scripts', 'lullberry_enqueue_overlay_scripts');
+function lullberry_enqueue_overlay_scripts() {
+    // Only load this script when in overlay mode
+    if (isset($_GET['overlay_mode'])) {
+        wp_enqueue_script(
+            'iframe-cart-handler',
+            get_stylesheet_directory_uri() . '/iframe-cart-handler.js',
+            array('jquery'),
+            filemtime(get_stylesheet_directory() . '/iframe-cart-handler.js'),
+            true
+        );
+    }
+}
+
+// Template redirection for overlay mode
+add_filter( 'template_include', 'lullberry_overlay_template', 99 );
+function lullberry_overlay_template( $template ) {
+    if ( isset( $_GET['overlay_mode'] ) && is_product() ) {
+        $new_template = locate_template( array( 'single-product-overlay.php' ) );
+        if ( '' != $new_template ) {
+            return $new_template;
+        }
+    }
+    return $template;
+}
+
+// Inject CPT animation into the overlay
+add_action('woocommerce_after_add_to_cart_button', 'lullberry_inject_cpt_animation', 10);
+function lullberry_inject_cpt_animation() {
+    // Only run in overlay mode and if ACF is active
+    if (!isset($_GET['overlay_mode']) || !function_exists('get_field')) {
+        return;
+    }
+
+    $linked_board_id = get_field('board_animation');
+    if (!$linked_board_id) {
+        return;
+    }
+
+    // Set up post data for the board animation CPT to render its markup
+    global $post;
+    $original_post = $post;
+    $post = get_post($linked_board_id);
+    setup_postdata($post);
+
+    // Include the markup
+    require get_stylesheet_directory() . '/board-animation-markup.php';
+
+    // Restore original post data
+    wp_reset_postdata();
+    $post = $original_post; // wp_reset_postdata might not be enough in all contexts
+}
+
+// Add security headers for iframe compatibility
+add_action('send_headers', 'lullberry_add_security_headers');
+function lullberry_add_security_headers() {
+    header('X-Frame-Options: SAMEORIGIN');
+}
+
 // Include board animation functionality
 require_once get_stylesheet_directory() . '/board-animation-fix.php';
 

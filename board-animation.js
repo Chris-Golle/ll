@@ -177,9 +177,9 @@ window.initBoardAnimation = function () {
 
         // Trapezoid calculation (uses full rotation progress)
         const trapezoidProgress = Math.min(currentRotation / maxRotation, 1);
-        const trapezoidHeight = 333 - (trapezoidProgress * 222); 
-        const trapezoidTopWidth = 111 + (trapezoidProgress * 88); 
-        const trapezoidBottomWidth = 222; 
+        const trapezoidHeight = 333 - (trapezoidProgress * 222);
+        const trapezoidTopWidth = 111 + (trapezoidProgress * 88);
+        const trapezoidBottomWidth = 222;
         const trapezoidTopOffset = (trapezoidBottomWidth - trapezoidTopWidth) / 2;
 
         const leftTrapezoidSvg = document.getElementById('trapezoid-svg');
@@ -498,7 +498,7 @@ window.initBoardAnimation = function () {
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-    if (window.self === window.top) window.initBoardAnimation();
+    window.initBoardAnimation();
 });
 
 document.addEventListener('click', function (e) {

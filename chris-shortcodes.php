@@ -1,5 +1,25 @@
 <?php
 
+add_shortcode('product_fullscreen', 'lullberry_product_fullscreen_shortcode');
+function lullberry_product_fullscreen_shortcode($atts) {
+    $atts = shortcode_atts(array(
+        'product_id' => null,
+    ), $atts, 'product_fullscreen');
+
+    if (empty($atts['product_id'])) {
+        return '<!-- Product ID missing -->';
+    }
+
+    $product = wc_get_product($atts['product_id']);
+    if (!$product) {
+        return '<!-- Product not found -->';
+    }
+
+    $permalink = get_permalink($atts['product_id']);
+
+    return '<button class="product-fullscreen-button" data-product-url="' . esc_url($permalink) . '">View Fullscreen</button>';
+}
+
 /**
  * Personality Quiz Shortcode
  * Enhanced shortcode with better validation and error handling

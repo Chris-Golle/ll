@@ -3,3 +3,60 @@ Theme Name: Twenty Twenty-Five Child
 Template: twentytwentyfive
 Text Domain: twentytwentyfive-child
 */
+
+/* Product Overlay Styles */
+.product-overlay-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.product-overlay-spinner {
+    color: white;
+    font-size: 2em;
+}
+
+.product-overlay-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.product-overlay-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100001;
+    background: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+}
+
+/* Viewport-Width Breakout for Animation */
+.product-overlay-wrapper .animation-container {
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    position: relative;
+    box-sizing: border-box;
+}
+
+.body-overlay-active, .body-overlay-active body {
+    overflow-y: auto !important;
+    height: 100%;
+}

@@ -183,3 +183,58 @@ function wordflick(strings) {
     }, speed);
   });
 };
+
+jQuery(document).ready(function ($) {
+    // Product Fullscreen Overlay
+    $(document.body).on('click', '.product-fullscreen-button', function (e) {
+        e.preventDefault();
+
+        var productUrl = $(this).data('product-url');
+        if (!productUrl) {
+            return;
+        }
+
+        var overlayUrl = new URL(productUrl);
+        overlayUrl.searchParams.set('overlay_mode', '1');
+
+        // Create overlay elements
+        var $overlay = $('<div class="product-overlay-container"></div>');
+        var $spinner = $('<div class="product-overlay-spinner">Loading...</div>');
+        var $iframe = $('<iframe src="' + overlayUrl.href + '"></iframe>');
+        var $closeButton = $('<button class="product-overlay-close">&times;</button>');
+
+        // Append to body
+        $overlay.append($spinner).append($iframe).append($closeButton).appendTo('body');
+
+        // Lock body scroll
+        $('html, body').css('overflow', 'hidden');
+
+        // Handle iframe load
+        $iframe.on('load', function () {
+            $spinner.hide();
+            $iframe.css('opacity', '1');
+        });
+
+        // Handle close button
+        $closeButton.on('click', function () {
+            $overlay.remove();
+            $('html, body').css('overflow', '');
+        });
+    });
+
+    // Listen for messages from the iframe (for cart updates)
+    $(window).on('message', function (event) {
+        if (event.originalEvent.origin !== window.location.origin) {
+             return;
+        }
+
+        var data = event.originalEvent.data;
+
+        if (data && data.action === 'woocommerce_added_to_cart' && data.fragments) {
+            $.each(data.fragments, function (key, value) {
+                $(key).replaceWith(value);
+            });
+            $(document.body).trigger('wc_fragments_refreshed');
+        }
+    });
+});
