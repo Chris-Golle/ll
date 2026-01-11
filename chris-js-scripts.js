@@ -218,30 +218,4 @@ jQuery(document).ready(function ($) {
         // Handle close button is now a delegated event handler below
     });
 
-    // Delegated handler for the close button
-    $(document.body).on('click', '.product-overlay-close', function() {
-        const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
-
-        if (wasUpdated === 'true') {
-            window.sessionStorage.removeItem('cart_updated_in_overlay');
-            window.location.reload();
-        } else {
-            $('.product-overlay-container').remove();
-            $('html, body').css('overflow', '');
-        }
-    });
-
-    $(document).keyup(function(e) {
-        if (e.key === "Escape") {
-            const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
-            if (wasUpdated === 'true') {
-                window.sessionStorage.removeItem('cart_updated_in_overlay');
-                window.location.reload();
-            } else {
-                // Also close the overlay on escape if it exists
-                $('.product-overlay-container').remove();
-                $('html, body').css('overflow', '');
-            }
-        }
-    });
 });
