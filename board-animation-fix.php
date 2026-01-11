@@ -138,7 +138,7 @@ function enqueue_board_animation_assets() {
 }
 
 // 5. Refactored Content Injection Logic
-add_action('woocommerce_after_single_product', 'lullberry_product_page_content_injection');
+add_action('woocommerce_after_single_product_summary', 'lullberry_product_page_content_injection');
 function lullberry_product_page_content_injection() {
     if (!function_exists('get_field') || !get_field('board_animation')) {
         return;
