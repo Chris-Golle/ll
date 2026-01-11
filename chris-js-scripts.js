@@ -219,15 +219,7 @@ jQuery(document).ready(function ($) {
         $closeButton.on('click', function () {
             $overlay.remove();
             $('html, body').css('overflow', '');
-            if (window.sessionStorage) {
-                Object.keys(sessionStorage).forEach(key => {
-                    if (key.includes('wc_fragments') || key.includes('wc_cart_hash')) {
-                        sessionStorage.removeItem(key);
-                    }
-                });
-            }
             jQuery(document.body).trigger('wc_fragment_refresh');
-            jQuery(document.body).trigger('wc_fragments_load');
         });
     });
 
@@ -235,20 +227,37 @@ jQuery(document).ready(function ($) {
         if (event.origin !== window.location.origin) return;
 
         if (event.data && event.data.action === 'wc_force_refresh') {
+            // 1. Force Clear the Storage
             if (window.sessionStorage) {
-                // 1. Find and remove all WC-related session items
-                Object.keys(sessionStorage).forEach(key => {
-                    if (key.includes('wc_fragments') || key.includes('wc_cart_hash')) {
-                        sessionStorage.removeItem(key);
+                sessionStorage.clear(); // Clear all to be safe
+            }
+
+            // 2. Trigger the standard refresh
+            jQuery(document.body).trigger('wc_fragment_refresh');
+
+            // 3. THE FALLBACK: If the above doesn't trigger the AJAX, call it manually
+            if (typeof wc_cart_fragments_params !== 'undefined') {
+                jQuery.ajax({
+                    url: wc_cart_fragments_params.wc_ajax_url.toString().replace('%%endpoint%%', 'get_refreshed_fragments'),
+                    type: 'POST',
+                    data: {
+                        time: new Date().getTime()
+                    },
+                    timeout: wc_cart_fragments_params.request_timeout,
+                    success: function(data) {
+                        if (data && data.fragments) {
+                            jQuery.each(data.fragments, function(key, value) {
+                                jQuery(key).replaceWith(value);
+                            });
+                            jQuery(document.body).trigger('wc_fragments_refreshed');
+                            console.log('Parent: Hard AJAX Sync Complete.');
+                        }
+                    },
+                    error: function() {
+                        console.log('Parent: AJAX Sync Failed.');
                     }
                 });
             }
-
-            // 2. Force the native WC refresh
-            jQuery(document.body).trigger('wc_fragment_refresh');
-
-            // 3. Fallback: If the icon still doesn't change, trigger the specific fragment load
-            jQuery(document.body).trigger('wc_fragments_load');
         }
     });
 });
