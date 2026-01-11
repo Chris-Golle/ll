@@ -220,27 +220,13 @@ jQuery(document).ready(function ($) {
 
     // Delegated handler for the close button, now in the correct parent context
     $(document.body).on('click', '.product-overlay-close', function() {
-        const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
-        if (wasUpdated === 'true') {
-            window.sessionStorage.removeItem('cart_updated_in_overlay');
-            window.location.reload();
-        } else {
-            $('.product-overlay-container').remove();
-            $('html, body').css('overflow', '');
-        }
+        window.location.reload();
     });
 
     // Escape key handler, now in the correct parent context
     $(document).keyup(function(e) {
         if (e.key === "Escape") {
-            const wasUpdated = window.sessionStorage.getItem('cart_updated_in_overlay');
-            if (wasUpdated === 'true') {
-                window.sessionStorage.removeItem('cart_updated_in_overlay');
-                window.location.reload();
-            } else {
-                $('.product-overlay-container').remove();
-                $('html, body').css('overflow', '');
-            }
+            window.location.reload();
         }
     });
 });
