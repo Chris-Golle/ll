@@ -33,7 +33,7 @@ function board_messages_callback($post) {
     $messages = get_post_meta($post->ID, '_board_messages', true);
     // Display logic... (kept simple for brevity, standard editor output)
     $display_text = (is_array($messages)) ? implode(',', array_map(function($m) { return '"'.str_replace('{{NEWLINE}}', "\n", $m).'"'; }, $messages)) : '';
-    
+
     echo '<p><strong>Format:</strong> "Message 1","Message 2"... (Use quotes)</p>';
     wp_editor($display_text, 'board_messages_text', array('media_buttons' => false, 'textarea_rows' => 10));
 }
@@ -58,7 +58,7 @@ function save_board_animation_meta($post_id) {
         $messages = $matches[1] ?: [];
         $messages = array_map('trim', $messages);
         $messages = array_filter($messages); // Remove empty
-        
+
         // Store as array
         update_post_meta($post_id, '_board_messages', $messages);
         // Backup as JSON
@@ -71,68 +71,53 @@ function save_board_animation_meta($post_id) {
     }
 }
 
-// 4. Enqueue Board Animation Assets (CPT + WooCommerce products)
-add_action( 'wp_enqueue_scripts', 'enqueue_board_animation_assets' );
+// 4. Enqueue Board Animation Assets for Single CPT View
+add_action( 'wp_enqueue_scripts', 'enqueue_single_board_animation_assets' );
 
-function enqueue_board_animation_assets() {
+function enqueue_single_board_animation_assets() {
+    // This function now *only* handles the assets for the single board_animation CPT page.
+    // The quick view modal handles its own asset loading via the shortcode.
 
-    $board_post_id = null;
-
-    // Case 1: Single board_animation CPT page
-    if ( is_singular( 'board_animation' ) ) {
-        $board_post_id = get_the_ID();
+    if ( ! is_singular( 'board_animation' ) ) {
+        return; // Only run on single board animation pages.
     }
 
-    // Case 2: WooCommerce product page with linked board animation (ACF)
-    elseif ( function_exists( 'is_product' ) && is_product() && function_exists( 'get_field' ) ) {
-        $linked_board_id = get_field( 'board_animation' );
-        if ( $linked_board_id ) {
-            $board_post_id = $linked_board_id;
-        }
-    }
+    $board_post_id = get_the_ID();
 
-    // If no board animation is relevant, bail early
-    if ( ! $board_post_id ) {
-        return;
-    }
-
-    // Enqueue CSS
+    // Enqueue the animation-specific stylesheet.
     wp_enqueue_style(
-        'board-style',
+        'lullberry-cpt-board-animation-style',
         get_stylesheet_directory_uri() . '/css/board-animation.css',
         array(),
-        '1.1'
+        filemtime( get_stylesheet_directory() . '/css/board-animation.css' )
     );
 
-    // Enqueue JS
+    // Enqueue the original board animation JS (it's self-contained for the single page).
     wp_enqueue_script(
-        'board-script',
+        'lullberry-cpt-board-animation-js',
         get_stylesheet_directory_uri() . '/board-animation.js',
         array( 'jquery' ),
-        '1.1',
+        filemtime( get_stylesheet_directory() . '/board-animation.js' ),
         true
     );
 
-    // Prepare messages for JS
-    $messages = get_post_meta( $board_post_id, '_board_messages', true );
+    // Prepare messages for the JS.
+    $messages = get_field( '_board_messages', $board_post_id );
     if ( ! is_array( $messages ) ) {
         $messages = [];
     }
 
-    $messages = array_map(
-        function ( $m ) {
-            return str_replace( '{{NEWLINE}}', "\n", $m );
-        },
-        $messages
-    );
+    // Crucially, process the {{newline}} placeholders before sending to JS.
+    $processed_messages = array_map( function( $m ) {
+        return str_replace( '{{NEWLINE}}', "\n", $m );
+    }, $messages );
 
-    // Localize data for JS
+    // Localize data for the script.
     wp_localize_script(
-        'board-script',
+        'lullberry-cpt-board-animation-js',
         'boardAnimationData',
         array(
-            'messages' => $messages,
-            'boardId'  => $board_post_id,
+            'messages' => $processed_messages,
         )
     );
 }
@@ -146,7 +131,7 @@ function render_board_modal_button($atts) {
     if (!$atts['post_id']) return '';
 
     $url = get_permalink($atts['post_id']);
-    
+
     // Queue modal for footer
     global $board_modals;
     $board_modals[$atts['post_id']] = $url;
@@ -175,7 +160,7 @@ add_action('wp_footer', function() {
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.board-modal-trigger');
         if (!btn) return;
-        
+
         const dlg = document.getElementById('board-modal-' + btn.dataset.modalId);
         if (dlg) {
             dlg.showModal();
@@ -183,7 +168,7 @@ add_action('wp_footer', function() {
             const iframe = dlg.querySelector('iframe');
             setTimeout(() => {
                 if (iframe.contentWindow && iframe.contentWindow.initBoardAnimation) {
-                    iframe.contentWindow.initBoardAnimation(); 
+                    iframe.contentWindow.initBoardAnimation();
                 }
             }, 100);
         }

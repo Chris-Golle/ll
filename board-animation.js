@@ -1,16 +1,18 @@
 window.initBoardAnimation = function () {
-    if (window.__boardAnimationRunning) return;
+    if (window.__boardAnimationRunning) {
+        return;
+    }
     window.__boardAnimationRunning = true;
 
     const $ = jQuery;
     // ========================================
     // BOARD ANIMATION INITIALIZATION
     // ========================================
-
-    // Get messages from WordPress post meta
     const messages = window.boardAnimationData ? window.boardAnimationData.messages : [];
+    if (messages.length === 0) {
+        return;
+    }
 
-    // Animation elements
     const animationContainer = document.getElementById('animation-container');
     const board = document.getElementById('board');
     const frontFace = document.getElementById('front-face');
@@ -18,6 +20,10 @@ window.initBoardAnimation = function () {
     const rightBoard = document.getElementById('right-board');
     const rightFrontFace = document.getElementById('right-front-face');
     const rightBackFace = document.getElementById('right-back-face');
+
+    if (!animationContainer || !board || !frontFace || !backFace || !rightBoard || !rightFrontFace || !rightBackFace) {
+        return;
+    }
 
     // Use WordPress messages
     const finalMessages = messages;
@@ -464,7 +470,7 @@ window.initBoardAnimation = function () {
             }
         });
     });
-    
+
     function closeBoardModal() {
         $('#board-animation-modal').removeClass('show').fadeOut(300);
         $('body').css('overflow', '');
@@ -477,21 +483,3 @@ window.initBoardAnimation = function () {
         if (e.key === 'Escape' && $('#board-animation-modal').hasClass('show')) closeBoardModal();
     });
 };
-
-document.addEventListener("DOMContentLoaded", function() {
-    if (window.self === window.top) window.initBoardAnimation();
-});
-
-document.addEventListener('click', function (e) {
-  const btn = e.target.closest('.board-modal-trigger');
-  if (!btn) return;
-  const id = btn.dataset.modalId;
-  const dlg = document.getElementById('board-modal-' + id);
-  if (!dlg) return;
-  dlg.showModal();
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-        window.initBoardAnimation();      
-    });
-  });
-});

@@ -20,7 +20,11 @@ html, body {
 global $post;
 setup_postdata( $post );
 
-require get_stylesheet_directory() . '/board-animation-markup.php';
+// Use the correct WordPress function to load the template part from the /template-parts/ directory.
+get_template_part('template-parts/board-animation-markup');
+
+// Call the animation initialization function directly after the markup is rendered.
+echo '<script type="text/javascript">if (typeof window.initBoardAnimation === "function") { window.initBoardAnimation(); }</script>';
 
 wp_reset_postdata();
 
