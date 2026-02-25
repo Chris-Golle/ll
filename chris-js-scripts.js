@@ -185,6 +185,14 @@ function wordflick(strings) {
 };
 
 jQuery(document).ready(function ($) {
+    window.addEventListener('message', function (event) {
+        if (event.origin !== window.location.origin) return;
+
+        if (event.data?.action === 'cart_updated') {
+            sessionStorage.setItem('cart_updated_in_overlay', '1');
+        }
+    });
+
     // Product Fullscreen Overlay
     $(document.body).on('click', '.product-fullscreen-button', function (e) {
         e.preventDefault();
@@ -214,27 +222,26 @@ jQuery(document).ready(function ($) {
             $spinner.hide();
             $iframe.css('opacity', '1');
         });
-
-        // Handle close button
-        $closeButton.on('click', function () {
-            $overlay.remove();
-            $('html, body').css('overflow', '');
-        });
     });
 
-    // Listen for messages from the iframe (for cart updates)
-    $(window).on('message', function (event) {
-        if (event.originalEvent.origin !== window.location.origin) {
-             return;
+    function closeOverlay() {
+        const updated = sessionStorage.getItem('cart_updated_in_overlay');
+
+        if (updated === '1') {
+            sessionStorage.removeItem('cart_updated_in_overlay');
+            window.location.reload(); // REQUIRED for block themes
+            return;
         }
 
-        var data = event.originalEvent.data;
+        $('.product-overlay-container').remove();
+        $('html, body').css('overflow', '');
+    }
 
-        if (data && data.action === 'woocommerce_added_to_cart' && data.fragments) {
-            $.each(data.fragments, function (key, value) {
-                $(key).replaceWith(value);
-            });
-            $(document.body).trigger('wc_fragments_refreshed');
-        }
+    // Delegated close button
+    $(document.body).on('click', '.product-overlay-close', closeOverlay);
+
+    // Escape key
+    $(document).on('keyup', function (e) {
+        if (e.key === 'Escape') closeOverlay();
     });
 });
